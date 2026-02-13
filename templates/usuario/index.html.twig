@@ -9,10 +9,11 @@
         <thead>
             <tr>
                 <th>Id</th>
+                <th>Email</th>
+                <th>Roles</th>
+                <th>Password</th>
                 <th>Tipo</th>
                 <th>Nickname</th>
-                <th>Email</th>
-                <th>Contrasenia</th>
                 <th>Biografia</th>
                 <th>Fecha_registro</th>
                 <th>Url_foto_perfil</th>
@@ -23,10 +24,11 @@
         {% for usuario in usuarios %}
             <tr>
                 <td>{{ usuario.id }}</td>
+                <td>{{ usuario.email }}</td>
+                <td>{{ usuario.roles ? usuario.roles|json_encode : '' }}</td>
+                <td>{{ usuario.password }}</td>
                 <td>{{ usuario.tipo }}</td>
                 <td>{{ usuario.nickname }}</td>
-                <td>{{ usuario.email }}</td>
-                <td>{{ usuario.contrasenia }}</td>
                 <td>{{ usuario.biografia }}</td>
                 <td>{{ usuario.fechaRegistro ? usuario.fechaRegistro|date('Y-m-d H:i:s') : '' }}</td>
                 <td>{{ usuario.urlFotoPerfil }}</td>
@@ -37,7 +39,7 @@
             </tr>
         {% else %}
             <tr>
-                <td colspan="9">no records found</td>
+                <td colspan="10">no records found</td>
             </tr>
         {% endfor %}
         </tbody>
