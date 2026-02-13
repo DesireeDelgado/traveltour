@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Viaje{% endblock %}
+
+{% block body %}
+    <h1>Viaje</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ viaje.id }}</td>
+            </tr>
+            <tr>
+                <th>Titulo</th>
+                <td>{{ viaje.titulo }}</td>
+            </tr>
+            <tr>
+                <th>Destino</th>
+                <td>{{ viaje.destino }}</td>
+            </tr>
+            <tr>
+                <th>Duracion</th>
+                <td>{{ viaje.duracion }}</td>
+            </tr>
+            <tr>
+                <th>Presupuesto</th>
+                <td>{{ viaje.presupuesto }}</td>
+            </tr>
+            <tr>
+                <th>Fecha_creacion</th>
+                <td>{{ viaje.fechaCreacion ? viaje.fechaCreacion|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Contenido</th>
+                <td>{{ viaje.contenido }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_viaje_index') }}">back to list</a>
+
+    <a href="{{ path('app_viaje_edit', {'id': viaje.id}) }}">edit</a>
+
+    {{ include('viaje/_delete_form.html.twig') }}
+{% endblock %}

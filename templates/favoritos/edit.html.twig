@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Favoritos{% endblock %}
+
+{% block body %}
+    <h1>Edit Favoritos</h1>
+
+    {{ include('favoritos/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_favoritos_index') }}">back to list</a>
+
+    {{ include('favoritos/_delete_form.html.twig') }}
+{% endblock %}
