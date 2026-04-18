@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Mantenemos un control de qué imagen está al frente (true = imgFg, false = imgBg)
     let isFgActive = true;
 
-    // Ejecutar cada 15 segundos (15000 milisegundos)
+    // Ejecutar cada 10 segundos (10000 milisegundos)
     setInterval(() => {
         currentIndex = (currentIndex + 1) % slides.length;
         const nextSlide = slides[currentIndex];
@@ -62,5 +62,5 @@ document.addEventListener('DOMContentLoaded', () => {
             textContainer.style.opacity = '1';
         }, 500);
 
-    }, 15000); 
+    }, 10000); 
 });
