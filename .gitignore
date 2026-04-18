@@ -26,3 +26,5 @@
 ###< pentatrion/vite-bundle ###
 
 .env
+.env.test
+.env.dev
