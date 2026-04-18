@@ -15,18 +15,18 @@
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
-    <body class="flex flex-col min-h-screen">
+    <body class="flex flex-col min-h-screen bg-[#f4f8fb] text-[#111518]">
     {% block header %}
     <header class="sticky top-0 z-50 w-full border-b border-solid border-[#f0f3f4] bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-6 md:px-10 py-3">
         <div class="max-w-[1280px] mx-auto flex items-center justify-between gap-8 whitespace-nowrap">
             <div class="flex items-center gap-8">
-                <div class="flex items-center gap-4 text-primary">
-                    <h2 class="text-[#111518] dark:text-white text-xl font-bold leading-tight tracking-[-0.015em]">TravelTour</h2>
-                </div>
+                <a href="{{ path('app_viaje_index')|default('/') }}" class="flex items-center gap-4 text-primary hover:opacity-90 transition-opacity">
+                    <img src="{{ asset('img/logo_traveltour.png') }}" alt="TravelTour Logo" class="h-9 w-auto">
+                </a>
                 <nav class="hidden lg:flex items-center gap-9">
-                    <a class="text-[#111518] dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="{{ path( 'app_viaje_index') }}">Home</a>
-                    <a class="text-[#111518] dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="{{ path( 'app_viaje_index') }}">Itinerarios</a>
-                    <a class="text-[#111518] dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="{{ path('app_favoritos_index') }}">Mis Favoritos</a>
+                    <a class="text-[#111518] dark:text-white text-sm font-medium leading-normal hover:text-blue-600 transition-colors" href="{{ path( 'app_viaje_index') }}">Home</a>
+                    <a class="text-[#111518] dark:text-white text-sm font-medium leading-normal hover:text-blue-600 transition-colors" href="{{ path( 'app_viaje_index') }}">Itinerarios</a>
+                    <a class="text-[#111518] dark:text-white text-sm font-medium leading-normal hover:text-blue-600 transition-colors" href="{{ path('app_favoritos_index') }}">Mis Favoritos</a>
                 </nav>
             </div>
             <div class="flex flex-1 justify-end gap-4 items-center">
@@ -38,7 +38,7 @@
                         <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111518] dark:text-white focus:outline-0 focus:ring-0 border-none bg-[#f0f3f4] dark:bg-slate-800 focus:border-none h-full placeholder:text-[#617989] px-4 rounded-l-none pl-2 text-base font-normal" value=""/>
                     </div>
                 </label>
-                <a href="{{ path( 'app_viaje_new') }}" class="bg-sky-500 flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:opacity-90 transition-opacity">
+                <a href="{{ path( 'app_viaje_new') }}" class="bg-blue-600 flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-blue-700 transition-colors shadow-md">
                     <span class="truncate">Crear itinerario</span>
                 </a>
                 <a href="{{ path('app_usuario_index') }}">
@@ -55,32 +55,27 @@
             <div class="max-w-[1280px] mx-auto px-10 py-8"> <div class="flex flex-wrap justify-center gap-12 text-center md:text-left">
 
                     <div class="w-full md:w-auto md:max-w-[300px] flex flex-col items-center md:items-start">
-                        <div class="flex items-center gap-3 text-primary mb-6">
-                            <div class="size-6">
-                                <svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M47.2426 24L24 47.2426L0.757355 24L24 0.757355L47.2426 24Z" fill="currentColor"></path>
-                                </svg>
-                            </div>
-                            <h2 class="text-xl font-bold text-[#111518] dark:text-white">TravelTour</h2>
+                        <div class="flex items-center gap-3 mb-6">
+                            <img src="{{ asset('img/logo_traveltour.png') }}" alt="TravelTour Logo" class="h-10 w-auto">
                         </div>
                         <p class="text-[#617989] text-sm">La comunidad más grande del mundo de itinerarios de viaje auténticos y basados en experiencias.</p>
                     </div>
 
                     <div class="min-w-[150px]">
-                        <h4 class="font-bold mb-4">Plataforma</h4>
+                        <h4 class="font-bold mb-4 text-[#111518] dark:text-white">Plataforma</h4>
                         <ul class="space-y-2 text-sm text-[#617989]">
-                            <li><a class="hover:text-primary" href="#">Guías</a></li>
-                            <li><a class="hover:text-primary" href="#">Creadores</a></li>
-                            <li><a class="hover:text-primary" href="#">Comunidad</a></li>
+                            <li><a class="hover:text-blue-600 transition-colors" href="#">Guías</a></li>
+                            <li><a class="hover:text-blue-600 transition-colors" href="#">Creadores</a></li>
+                            <li><a class="hover:text-blue-600 transition-colors" href="#">Comunidad</a></li>
                         </ul>
                     </div>
 
                     <div class="min-w-[150px]">
-                        <h4 class="font-bold mb-4">Soporte</h4>
+                        <h4 class="font-bold mb-4 text-[#111518] dark:text-white">Soporte</h4>
                         <ul class="space-y-2 text-sm text-[#617989]">
-                            <li><a class="hover:text-primary" href="#">Seguridad</a></li>
-                            <li><a class="hover:text-primary" href="#">Política de privacidad</a></li>
-                            <li><a class="hover:text-primary" href="#">Términos del servicio</a></li>
+                            <li><a class="hover:text-blue-600 transition-colors" href="#">Seguridad</a></li>
+                            <li><a class="hover:text-blue-600 transition-colors" href="#">Política de privacidad</a></li>
+                            <li><a class="hover:text-blue-600 transition-colors" href="#">Términos del servicio</a></li>
                         </ul>
                     </div>
 

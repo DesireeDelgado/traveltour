@@ -6,12 +6,14 @@
 <header class="sticky top-0 z-50 w-full border-b border-solid border-[#f0f3f4] bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-6 md:px-10 py-3">
     <div class="max-w-[1280px] mx-auto flex items-center justify-between">
         <div class="flex items-center">
-            <p class="text-[#111518] text-2xl font-bold tracking-tight">TravelTour</p>
+            <a href="{{ path('app_viaje_index')|default('/') }}">
+                <img src="{{ asset('img/logo_traveltour.png') }}" alt="TravelTour Logo" class="h-9 w-auto hover:opacity-90 transition-opacity">
+            </a>
         </div>
         <div class="flex items-center gap-6">
             <!-- Recuerda cambiar la ruta '# ' a app_login y app_register cuando los tengas -->
             <a href="#" class="text-[#111518] font-medium hover:text-blue-600 transition-colors">Inicia sesión</a>
-            <a href="#" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 rounded-full font-semibold transition-all shadow-lg hover:shadow-blue-500/30">Regístrate</a>
+            <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full font-semibold transition-all shadow-lg hover:shadow-blue-600/30">Regístrate</a>
         </div>
     </div>
 </header>
@@ -31,7 +33,7 @@
         <h1 class="text-5xl md:text-7xl font-bold text-white tracking-tight mb-6 leading-tight drop-shadow-lg font-sans">
             Tus viajes merecen <br /> ser recordados
         </h1>
-        <p class="text-lg md:text-xl text-gray-200 mb-10 max-w-2xl font-light drop-shadow-md">
+        <p class="text-lg md:text-xl text-white mb-10 max-w-2xl font-bold drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
             Crea, comparte y descubre itinerarios por el mundo. Únete a una comunidad de viajeros apasionados y guarda tus aventuras para siempre.
         </p>
         <a href="{{ path('app_usuario_new')|default('#') }}" class="bg-blue-600 hover:bg-blue-500 text-white text-lg px-8 py-4 rounded-full font-semibold transition-all shadow-lg hover:shadow-blue-500/40 hover:-translate-y-1">
@@ -41,7 +43,7 @@
 </section>
 
 <!-- Features Section -->
-<section class="py-24 bg-gray-50">
+<section class="py-24 bg-transparent">
     <div class="max-w-[1280px] mx-auto px-6 md:px-10">
         <div class="text-center mb-16">
             <h2 class="text-3xl font-bold text-[#111518] mb-4">Todo lo que necesitas para tu viaje</h2>
@@ -78,7 +80,7 @@
 </section>
 
 <!-- Instagram Grid Section -->
-<section class="py-20 bg-white">
+<section class="py-20 bg-transparent">
     <div class="max-w-[1280px] mx-auto px-6 md:px-10">
         <div class="mb-10 text-center md:text-left">
             <h2 class="text-3xl font-bold text-[#111518] mb-3">Destinos que inspiran</h2>
