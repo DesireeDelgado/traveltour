@@ -1,28 +1,103 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Log in!{% endblock %}
+{% block title %}TravelTour - Login{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <style>
+        .font-body, .font-headline, .font-label {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+    </style>
+{% endblock %}
+
+{% block header %}{% endblock %}
 
 {% block body %}
-<form method="post">
-    {% if error %}
-        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    {% endif %}
-
-    {% if app.user %}
-        <div class="mb-3">
-            You are logged in as {{ app.user.userIdentifier }}, <a href="{{ logout_path() }}">Logout</a>
+<!-- Utilizamos fixed inset-0 z-[100] para sobreponernos al footer y los márgenes globales de la app sin tener que tocar base.html.twig en absoluto -->
+<div class="fixed inset-0 z-[100] flex flex-col items-center justify-center font-body m-0 p-0 overflow-y-auto bg-[#f8f9fa] text-[#191c1d]">
+    <main class="w-full relative flex items-center justify-center min-h-screen m-0 p-0 flex-grow">
+        <!-- Imagen de fondo de la Landing Page -->
+        <div class="absolute inset-0 z-0">
+            <img alt="Fondo hero paisaje" class="w-full h-full object-cover" src="{{ asset('img/fondoFurgo.png') }}"/>
+            <!-- Overlay oscuro sutil -->
+            <div class="absolute inset-0 bg-black/20"></div>
         </div>
-    {% endif %}
+        
+        <!-- Tarjeta Login -->
+        <div class="relative z-10 w-full max-w-md px-6 py-12">
+            <div class="bg-[#f8f9fa]/70 backdrop-blur-2xl rounded-[2rem] shadow-[0_12px_32px_rgba(25,28,29,0.06)] p-10 border border-[#bfc7d1]/15 flex flex-col items-center">
+                
+                <!-- Cabecera Logo de la tarjeta -->
+                <div class="mb-8 text-center flex flex-col items-center">
+                    <a href="{{ path('app_viaje_index')|default('/') }}">
+                        <img src="{{ asset('img/logo_traveltour.png') }}" alt="TravelTour Logo" class="h-10 w-auto hover:opacity-90 transition-opacity">
+                    </a>
+                    <p class="text-sm tracking-wide text-[#404850] mt-2 font-label">¡Hola de nuevo!</p>
+                </div>
+                
+                <!-- Formulario Symfony Auth -->
+                <form method="post" class="w-full space-y-6">
+                    {% if error %}
+                        <div class="bg-red-100 text-red-800 text-sm p-4 rounded-[1rem] mb-4 text-center">
+                            {{ error.messageKey|trans(error.messageData, 'security') }}
+                        </div>
+                    {% endif %}
 
-    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-    <label for="inputEmail">Email</label>
-    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
-    <label for="inputPassword">Password</label>
-    <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
-    <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+                    {% if app.user %}
+                        <div class="bg-[#cde5ff] text-[#001d32] text-sm p-4 rounded-[1rem] mb-4 text-center">
+                            Estás conectado como {{ app.user.userIdentifier }}, <a href="{{ logout_path() }}" class="font-bold underline hover:text-[#005d90]">Cerrar sesión</a>
+                        </div>
+                    {% endif %}
 
-    <button class="btn btn-lg btn-primary" type="submit">
-        Sign in
-    </button>
-</form>
+                    <!-- Input Correo Electrónico -->
+                    <div>
+                        <label class="sr-only" for="email">Dirección de correo</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <span class="material-symbols-outlined text-[#404850] text-xl">mail</span>
+                            </div>
+                            <input class="w-full pl-12 pr-4 py-4 bg-[#e7e8e9] border-none rounded-full text-[#191c1d] placeholder-[#404850] focus:bg-white focus:ring-2 focus:ring-[#005d90]/40 transition-colors duration-200" id="email" name="email" value="{{ last_username }}" placeholder="Correo electrónico" required autofocus type="email"/>
+                        </div>
+                    </div>
+                    
+                    <!-- Input Contraseña -->
+                    <div>
+                        <label class="sr-only" for="password">Contraseña</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <span class="material-symbols-outlined text-[#404850] text-xl">lock</span>
+                            </div>
+                            <input class="w-full pl-12 pr-4 py-4 bg-[#e7e8e9] border-none rounded-full text-[#191c1d] placeholder-[#404850] focus:bg-white focus:ring-2 focus:ring-[#005d90]/40 transition-colors duration-200" id="password" name="password" autocomplete="current-password" placeholder="Contraseña" required type="password"/>
+                        </div>
+                    </div>
+
+                    <!-- Token CSRF del componente de seguridad de Symfony -->
+                    <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+
+                    <div class="flex items-center justify-between text-sm">
+                        <label class="flex items-center cursor-pointer">
+                            <input class="rounded border-[#bfc7d1] text-[#005d90] focus:ring-[#005d90]/40 bg-[#e7e8e9] w-4 h-4 cursor-pointer" name="_remember_me" type="checkbox"/>
+                            <span class="ml-2 text-[#404850] font-medium">Recuérdame</span>
+                        </label>
+                        <a class="font-medium text-[#005d90] hover:text-[#0077b6] transition-colors" href="#">¿Olvidaste la contraseña?</a>
+                    </div>
+                    
+                    <!-- Botón Principal Login -->
+                    <button class="w-full py-4 px-6 rounded-full bg-blue-600 text-white font-semibold tracking-wide hover:opacity-90 active:scale-95 transition-all duration-200 shadow-[0_12px_32px_rgba(25,28,29,0.06)]" type="submit">
+                        Iniciar sesión
+                    </button>
+                </form>
+                
+                <div class="mt-8 text-center text-sm text-[#404850] font-medium">
+                    ¿No tienes una cuenta? <a class="text-[#005d90] hover:text-[#0077b6] font-semibold transition-colors" href="#">Comienza tu viaje</a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
 {% endblock %}
