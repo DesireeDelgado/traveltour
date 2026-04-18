@@ -15,7 +15,8 @@
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
-    <body>
+    <body class="flex flex-col min-h-screen">
+    {% block header %}
     <header class="sticky top-0 z-50 w-full border-b border-solid border-[#f0f3f4] bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-6 md:px-10 py-3">
         <div class="max-w-[1280px] mx-auto flex items-center justify-between gap-8 whitespace-nowrap">
             <div class="flex items-center gap-8">
@@ -46,10 +47,11 @@
             </div>
         </div>
     </header>
-    <main>
+    {% endblock %}
+    <main class="flex-1">
             {% block body %}{% endblock %}
     </main>
-    <footer class="fixed bottom-0 left-0 w-full bg-white dark:bg-slate-900 border-t border-[#f0f3f4] dark:border-slate-800">
+    <footer class="w-full bg-white dark:bg-slate-900 border-t border-[#f0f3f4] dark:border-slate-800">
             <div class="max-w-[1280px] mx-auto px-10 py-8"> <div class="flex flex-wrap justify-center gap-12 text-center md:text-left">
 
                     <div class="w-full md:w-auto md:max-w-[300px] flex flex-col items-center md:items-start">

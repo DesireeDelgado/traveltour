@@ -1,0 +1,132 @@
+﻿{% extends 'base.html.twig' %}
+
+{% block title %}TravelTour{% endblock %}
+
+{% block header %}
+<header class="sticky top-0 z-50 w-full border-b border-solid border-[#f0f3f4] bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-6 md:px-10 py-3">
+    <div class="max-w-[1280px] mx-auto flex items-center justify-between">
+        <div class="flex items-center">
+            <p class="text-[#111518] text-2xl font-bold tracking-tight">TravelTour</p>
+        </div>
+        <div class="flex items-center gap-6">
+            <!-- Recuerda cambiar la ruta '# ' a app_login y app_register cuando los tengas -->
+            <a href="#" class="text-[#111518] font-medium hover:text-blue-600 transition-colors">Inicia sesión</a>
+            <a href="#" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 rounded-full font-semibold transition-all shadow-lg hover:shadow-blue-500/30">Regístrate</a>
+        </div>
+    </div>
+</header>
+{% endblock %}
+
+{% block body %}
+<!-- Hero Section -->
+<section class="relative min-h-[600px] h-[80vh] flex items-center justify-center">
+    <!-- Background Image -->
+    <div class="absolute inset-0 z-0 bg-gray-900">
+        <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2021&auto=format&fit=crop" class="w-full h-full object-cover opacity-70" alt="Paisaje épico de viaje" />
+        <div class="absolute inset-0 bg-gradient-to-b from-[#0a192f]/60 via-transparent to-white/10"></div>
+    </div>
+
+    <!-- Content -->
+    <div class="relative z-10 text-center max-w-4xl px-4 flex flex-col items-center mt-10">
+        <h1 class="text-5xl md:text-7xl font-bold text-white tracking-tight mb-6 leading-tight drop-shadow-lg font-sans">
+            Tus viajes merecen <br /> ser recordados
+        </h1>
+        <p class="text-lg md:text-xl text-gray-200 mb-10 max-w-2xl font-light drop-shadow-md">
+            Crea, comparte y descubre itinerarios por el mundo. Únete a una comunidad de viajeros apasionados y guarda tus aventuras para siempre.
+        </p>
+        <a href="{{ path('app_usuario_new')|default('#') }}" class="bg-blue-600 hover:bg-blue-500 text-white text-lg px-8 py-4 rounded-full font-semibold transition-all shadow-lg hover:shadow-blue-500/40 hover:-translate-y-1">
+            Empieza tu diario de viaje
+        </a>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-24 bg-gray-50">
+    <div class="max-w-[1280px] mx-auto px-6 md:px-10">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl font-bold text-[#111518] mb-4">Todo lo que necesitas para tu viaje</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <!-- Card 1 -->
+            <div class="bg-white p-10 rounded-2xl shadow-sm hover:shadow-md transition-shadow group flex flex-col items-center text-center border border-[#f0f3f4]">
+                <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold text-[#111518] mb-3">Comparte rutas</h3>
+                <p class="text-[#617989] leading-relaxed text-sm">Documenta cada paso de tu viaje con fotos y mapas. Inspira a otros con tus itinerarios perfectos.</p>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="bg-white p-10 rounded-2xl shadow-sm hover:shadow-md transition-shadow group flex flex-col items-center text-center border border-[#f0f3f4]">
+                <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-9v-2a2 2 0 00-2-2H8a2 2 0 00-2 2v2h12z"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold text-[#111518] mb-3">Descubre gastronomía</h3>
+                <p class="text-[#617989] leading-relaxed text-sm">Encuentra los rincones culinarios más auténticos recomendados por quienes ya los probaron.</p>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="bg-white p-10 rounded-2xl shadow-sm hover:shadow-md transition-shadow group flex flex-col items-center text-center border border-[#f0f3f4]">
+                <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold text-[#111518] mb-3">Conecta con viajeros</h3>
+                <p class="text-[#617989] leading-relaxed text-sm">Forma parte de una red global. Intercambia consejos, anécdotas y únete a nuevas expediciones.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Instagram Grid Section -->
+<section class="py-20 bg-white">
+    <div class="max-w-[1280px] mx-auto px-6 md:px-10">
+        <div class="mb-10 text-center md:text-left">
+            <h2 class="text-3xl font-bold text-[#111518] mb-3">Destinos que inspiran</h2>
+            <p class="text-[#617989]">Nuestra comunidad está compartiendo momentos increíbles ahora mismo.</p>
+        </div>
+
+        <!-- Grid Instagram Style -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <!-- Highlight post -->
+            <div class="aspect-square rounded-2xl overflow-hidden group relative cursor-pointer md:col-span-2 md:row-span-2 shadow-sm">
+                <img src="https://images.unsplash.com/photo-1499856871958-5b9627545d1a?q=80&w=1500&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Paris">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-8">
+                    <div>
+                        <span class="text-white font-bold text-2xl block mb-2">París, Francia</span>
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded-full bg-blue-500"></div>
+                            <span class="text-gray-200 text-sm font-medium">@viajero_experto</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Small posts -->
+            <div class="aspect-square rounded-2xl overflow-hidden group relative cursor-pointer shadow-sm">
+                <img src="https://images.unsplash.com/photo-1522083115901-1e1b712ba667?q=80&w=1000&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Santorini">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-5">
+                    <span class="text-white font-medium">Santorini, Grecia</span>
+                </div>
+            </div>
+            <div class="aspect-square rounded-2xl overflow-hidden group relative cursor-pointer shadow-sm">
+                <img src="https://images.unsplash.com/photo-1542051812-ba32e18462d0?q=80&w=1000&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Kioto">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-5">
+                    <span class="text-white font-medium">Kioto, Japón</span>
+                </div>
+            </div>
+            <div class="aspect-square rounded-2xl overflow-hidden group relative cursor-pointer shadow-sm">
+                <img src="https://images.unsplash.com/photo-1533929736458-ca588d08c8be?q=80&w=1000&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Londres">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-5">
+                    <span class="text-white font-medium">Londres</span>
+                </div>
+            </div>
+            <!-- Image 5 -->
+            <div class="aspect-square rounded-2xl overflow-hidden group relative cursor-pointer shadow-sm">
+                <img src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=1000&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Dubai">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-5">
+                    <span class="text-white font-medium">Dubai</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
