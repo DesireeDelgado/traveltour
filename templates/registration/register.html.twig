@@ -15,18 +15,7 @@
 <!-- Utilizamos fixed z-[100] para sobreponernos a la base y ocultar menús globales -->
 <div class="fixed inset-0 z-[100] flex flex-col antialiased bg-[#f8f9fa] overflow-y-auto" style="font-family: 'Plus Jakarta Sans', sans-serif;">
     
-    <!-- TopNavBar Simplificado -->
-    <nav class="w-full z-50 bg-white/70 backdrop-blur-3xl shadow-none sticky top-0">
-        <div class="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto">
-            <a class="text-2xl font-extrabold tracking-tighter text-[#191c1d]" href="{{ path('app_viaje_index')|default('/') }}">TravelTour</a>
-            <div class="hidden md:flex gap-8">
-                <a class="text-[#404850] font-medium hover:text-[#0077b6] transition-colors hover:opacity-80 active:scale-95 duration-200" href="#">Destinations</a>
-                <a class="text-[#404850] font-medium hover:text-[#0077b6] transition-colors hover:opacity-80 active:scale-95 duration-200" href="#">Stories</a>
-                <a class="text-[#404850] font-medium hover:text-[#0077b6] transition-colors hover:opacity-80 active:scale-95 duration-200" href="#">About</a>
-            </div>
-            <a class="hidden md:block px-6 py-2 rounded-full font-semibold text-[#0077b6] hover:opacity-80 transition-opacity active:scale-95 duration-200" href="{{ path('app_login') }}">Sign In</a>
-        </div>
-    </nav>
+    
 
     <!-- Main Content Canvas -->
     <main class="flex-grow flex items-center justify-center pt-12 pb-12 px-4 sm:px-6 lg:px-8">
@@ -113,30 +102,54 @@
             </div>
 
             <!-- Image Section -->
-            <div class="hidden md:block w-1/2 relative bg-[#f3f4f5]">
-                <img alt="aurora boreal finlandesa" class="absolute inset-0 w-full h-full object-cover object-center" src="{{ asset('img/auroraBoreal.jpg') }}"/>
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent flex items-end p-12">
-                    <div class="text-white">
-                        <h3 class="text-2xl font-bold mb-2">Laponia, Finlandia</h3>
-        
+            <div class="hidden md:block w-1/2 relative bg-black overflow-hidden pointer-events-none rounded-r-3xl">
+                <!-- Imagen trasera (cambio directo) -->
+                <img id="slider-image-bg" alt="paisaje fondo" class="absolute inset-0 w-full h-full object-cover object-center" src="{{ asset('img/auroraBoreal.jpg') }}"/>
+                <!-- Imagen del frente (transición cruzada) -->
+                <img id="slider-image-fg" alt="paisaje frente" class="absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000 ease-in-out opacity-100 placeholder-hide z-0" src="{{ asset('img/auroraBoreal.jpg') }}"/>
+                
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent flex items-end p-12 z-10">
+                    <div id="slider-text-container" class="text-white transition-opacity duration-1000 ease-in-out opacity-100">
+                        <!-- ID para el título del lugar -->
+                        <h3 id="slider-title" class="text-2xl font-bold mb-2 font-headline tracking-wide [text-shadow:-1px_-1px_0_#000,1px_-1px_0_#000,-1px_1px_0_#000,1px_1px_0_#000,0_4px_8px_rgba(0,0,0,0.8)]">Laponia, Finlandia</h3>
+                        <!-- ID para la descripción (opcional) -->
+                        <p id="slider-desc" class="text-white font-body font-medium tracking-wide [text-shadow:-1px_-1px_0_#000,1px_-1px_0_#000,-1px_1px_0_#000,1px_1px_0_#000,0_2px_4px_rgba(0,0,0,0.8)]">Donde la magia baila en el cielo nocturno.</p>
                     </div>
                 </div>
             </div>
         </div>
     </main>
     
-    <!-- Footer -->
-    <footer class="w-full py-8 mt-auto bg-[#f8f9fa] text-sm tracking-wide uppercase border-t border-[#e7e8e9]">
-        <div class="flex flex-col md:flex-row justify-between items-center px-12 max-w-7xl mx-auto gap-4 md:gap-0">
-            <div class="text-[#404850]">
-                © 2024 TravelTour. The Luminous Explorer.
-            </div>
-            <div class="flex gap-8">
-                <a class="text-[#404850] hover:text-[#0077b6] transition-colors duration-200" href="#">Privacy Policy</a>
-                <a class="text-[#404850] hover:text-[#0077b6] transition-colors duration-200" href="#">Terms of Service</a>
-                <a class="text-[#404850] hover:text-[#0077b6] transition-colors duration-200" href="#">Contact Us</a>
-            </div>
-        </div>
-    </footer>
+    
 </div>
+
+<!-- Extraemos este array a JSON para usarlo limpiamente en un archivo js separado -->
+<script id="carousel-data" type="application/json">
+[
+    {
+        "img": "{{ asset('img/auroraBoreal.jpg') }}",
+        "title": "Laponia, Finlandia",
+        "desc": "Donde la magia baila en el cielo nocturno."
+    },
+    {
+        "img": "{{ asset('img/gante.jpg') }}",
+        "title": "Gante, Bélgica",
+        "desc": "Ciudad vibrante llena de castillos ocultos y canales."
+    },
+    {
+        "img": "{{ asset('img/granada.jpg') }}",
+        "title": "Granada, España",
+        "desc": "El embrujo del sur bajo las murallas de la Alhambra."
+    },
+    {
+        "img": "{{ asset('img/sintra.jpg') }}",
+        "title": "Sintra, Portugal",
+        "desc": "Los palacios de cuento que se esconden en la montaña."
+    }
+]
+</script>
+
+<!-- Importamos nuestro script alojado en public/js/ -->
+<script src="{{ asset('js/register-carousel.js') }}"></script>
+
 {% endblock %}
