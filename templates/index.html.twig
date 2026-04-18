@@ -11,9 +11,8 @@
             </a>
         </div>
         <div class="flex items-center gap-6">
-            <!-- Recuerda cambiar la ruta '# ' a app_login y app_register cuando los tengas -->
             <a href="{{ path('app_login') }}" class="text-[#111518] font-medium hover:text-blue-600 transition-colors">Inicia sesión</a>
-            <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full font-semibold transition-all shadow-lg hover:shadow-blue-600/30">Regístrate</a>
+            <a href="{{ path('app_register') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full font-semibold transition-all shadow-lg hover:shadow-blue-600/30">Regístrate</a>
         </div>
     </div>
 </header>

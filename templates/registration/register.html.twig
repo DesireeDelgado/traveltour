@@ -1,0 +1,142 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register - TravelTour{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block body %}
+<!-- Utilizamos fixed z-[100] para sobreponernos a la base y ocultar menús globales -->
+<div class="fixed inset-0 z-[100] flex flex-col antialiased bg-[#f8f9fa] overflow-y-auto" style="font-family: 'Plus Jakarta Sans', sans-serif;">
+    
+    <!-- TopNavBar Simplificado -->
+    <nav class="w-full z-50 bg-white/70 backdrop-blur-3xl shadow-none sticky top-0">
+        <div class="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto">
+            <a class="text-2xl font-extrabold tracking-tighter text-[#191c1d]" href="{{ path('app_viaje_index')|default('/') }}">TravelTour</a>
+            <div class="hidden md:flex gap-8">
+                <a class="text-[#404850] font-medium hover:text-[#0077b6] transition-colors hover:opacity-80 active:scale-95 duration-200" href="#">Destinations</a>
+                <a class="text-[#404850] font-medium hover:text-[#0077b6] transition-colors hover:opacity-80 active:scale-95 duration-200" href="#">Stories</a>
+                <a class="text-[#404850] font-medium hover:text-[#0077b6] transition-colors hover:opacity-80 active:scale-95 duration-200" href="#">About</a>
+            </div>
+            <a class="hidden md:block px-6 py-2 rounded-full font-semibold text-[#0077b6] hover:opacity-80 transition-opacity active:scale-95 duration-200" href="{{ path('app_login') }}">Sign In</a>
+        </div>
+    </nav>
+
+    <!-- Main Content Canvas -->
+    <main class="flex-grow flex items-center justify-center pt-12 pb-12 px-4 sm:px-6 lg:px-8">
+        <div class="w-full max-w-6xl bg-[#ffffff] rounded-xl sm:rounded-2xl md:rounded-3xl shadow-[0_12px_32px_rgba(25,28,29,0.06)] overflow-hidden flex flex-col md:flex-row border border-[#e7e8e9]">
+            
+            <!-- Form Section -->
+            <div class="w-full md:w-1/2 p-8 sm:p-12 lg:p-16 flex flex-col justify-center bg-[#ffffff]">
+                <div class="max-w-md w-full mx-auto">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-[#191c1d] tracking-tight mb-2">La aventura te espera</h2>
+                    <p class="text-[#404850] text-lg mb-8">Create una cuenta y comienza tu viaje</p>
+                    
+                    {% if not registrationForm.vars.valid %}
+                        <div class="w-full text-red-600 mb-4 text-center text-sm font-semibold bg-red-100 p-2 rounded-lg">
+                            {{ form_errors(registrationForm) }}
+                        </div>
+                    {% endif %}
+
+                    {{ form_start(registrationForm, {'attr': {'class': 'space-y-6', 'novalidate': 'novalidate'}}) }}
+                        
+                        <!-- Nickname Input -->
+                        <div>
+                            <label class="block text-sm font-medium text-[#191c1d] mb-2 uppercase tracking-widest" for="nickname">Nickname</label>
+                            {{ form_widget(registrationForm.nickname, {
+                                'attr': {
+                                    'class': 'w-full bg-[#e7e8e9] border-none rounded-full px-5 py-3 focus:bg-[#ffffff] focus:ring-2 focus:ring-[#005d90]/40 focus:outline-none transition-colors text-[#191c1d]',
+                                    'placeholder': 'Tu nickname'
+                                }
+                            }) }}
+                            <div class="text-sm text-red-500 mt-1 ml-4">{{ form_errors(registrationForm.nickname) }}</div>
+                        </div>
+
+                        <!-- Email Input -->
+                        <div>
+                            <label class="block text-sm font-medium text-[#191c1d] mb-2 uppercase tracking-widest" for="email">Correo Electrónico</label>
+                            {{ form_widget(registrationForm.email, {
+                                'attr': {
+                                    'class': 'w-full bg-[#e7e8e9] border-none rounded-full px-5 py-3 focus:bg-[#ffffff] focus:ring-2 focus:ring-[#005d90]/40 focus:outline-none transition-colors text-[#191c1d]',
+                                    'placeholder': 'alex@traveltour.com'
+                                }
+                            }) }}
+                            <div class="text-sm text-red-500 mt-1 ml-4">{{ form_errors(registrationForm.email) }}</div>
+                        </div>
+                        
+                        <!-- Password Input -->
+                        <div>
+                            <label class="block text-sm font-medium text-[#191c1d] mb-2 uppercase tracking-widest" for="password">Contraseña</label>
+                            {{ form_widget(registrationForm.plainPassword, {
+                                'attr': {
+                                    'class': 'w-full bg-[#e7e8e9] border-none rounded-full px-5 py-3 focus:bg-[#ffffff] focus:ring-2 focus:ring-[#005d90]/40 focus:outline-none transition-colors text-[#191c1d]',
+                                    'placeholder': '••••••••'
+                                }
+                            }) }}
+                            <div class="text-sm text-red-500 mt-1 ml-4">{{ form_errors(registrationForm.plainPassword) }}</div>
+                        </div>
+
+                        <!-- Agree Terms -->
+                        <div class="flex items-center mt-4">
+                            {{ form_widget(registrationForm.agreeTerms, {
+                                'attr': {
+                                    'class': 'h-5 w-5 rounded border-[#707881] text-[#005d90] focus:ring-[#005d90]/40 bg-[#e7e8e9]'
+                                }
+                            }) }}
+                            <label class="ml-3 block text-sm text-[#404850]" for="terms">
+                                Estoy de acuerdo con los <a class="text-[#005d90] hover:text-[#0077b6] font-medium transition-colors" href="#">Términos de Servicio</a> y la <a class="text-[#005d90] hover:text-[#0077b6] font-medium transition-colors" href="#">Política de Privacidad</a>
+                            </label>
+                        </div>
+                        <div class="text-sm text-red-500 mt-1 ml-8">{{ form_errors(registrationForm.agreeTerms) }}</div>
+
+                        <!-- Submit Button -->
+                        <div class="pt-4">
+                            <button type="submit" class="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-full shadow-[0_12px_32px_rgba(25,28,29,0.06)] text-sm font-medium text-white bg-blue-600 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#005d90] transition-all duration-200">
+                                Crear cuenta
+                            </button>
+                        </div>
+                    {{ form_end(registrationForm) }}
+
+                    <div class="mt-8 text-center flex flex-col gap-2">
+                        <p class="text-sm text-[#404850]">
+                            ¿Ya tienes una cuenta?
+                            <a class="font-medium text-[#005d90] hover:text-[#0077b6] transition-colors" href="{{ path('app_login') }}">Inicia sesión</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image Section -->
+            <div class="hidden md:block w-1/2 relative bg-[#f3f4f5]">
+                <img alt="aurora boreal finlandesa" class="absolute inset-0 w-full h-full object-cover object-center" src="{{ asset('img/auroraBoreal.jpg') }}"/>
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent flex items-end p-12">
+                    <div class="text-white">
+                        <h3 class="text-2xl font-bold mb-2">Laponia, Finlandia</h3>
+        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="w-full py-8 mt-auto bg-[#f8f9fa] text-sm tracking-wide uppercase border-t border-[#e7e8e9]">
+        <div class="flex flex-col md:flex-row justify-between items-center px-12 max-w-7xl mx-auto gap-4 md:gap-0">
+            <div class="text-[#404850]">
+                © 2024 TravelTour. The Luminous Explorer.
+            </div>
+            <div class="flex gap-8">
+                <a class="text-[#404850] hover:text-[#0077b6] transition-colors duration-200" href="#">Privacy Policy</a>
+                <a class="text-[#404850] hover:text-[#0077b6] transition-colors duration-200" href="#">Terms of Service</a>
+                <a class="text-[#404850] hover:text-[#0077b6] transition-colors duration-200" href="#">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+</div>
+{% endblock %}
