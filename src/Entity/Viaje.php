@@ -56,11 +56,18 @@ class Viaje
     #[ORM\OneToMany(targetEntity: Favoritos::class, mappedBy: 'id_viaje', orphanRemoval: true)]
     private Collection $favoritos;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $alojamiento = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $gastronomia = null;
+
     public function __construct()
     {
         $this->comentarios = new ArrayCollection();
         $this->imagenes = new ArrayCollection();
         $this->favoritos = new ArrayCollection();
+        $this->fecha_creacion = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -238,6 +245,30 @@ class Viaje
                 $favorito->setIdViaje(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getAlojamiento(): ?string
+    {
+        return $this->alojamiento;
+    }
+
+    public function setAlojamiento(?string $alojamiento): static
+    {
+        $this->alojamiento = $alojamiento;
+
+        return $this;
+    }
+
+    public function getGastronomia(): ?string
+    {
+        return $this->gastronomia;
+    }
+
+    public function setGastronomia(?string $gastronomia): static
+    {
+        $this->gastronomia = $gastronomia;
 
         return $this;
     }

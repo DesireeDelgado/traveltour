@@ -18,14 +18,9 @@ class ViajeType extends AbstractType
             ->add('destino')
             ->add('duracion')
             ->add('presupuesto')
-            ->add('fecha_creacion', null, [
-                'widget' => 'single_text',
-            ])
             ->add('contenido')
-            ->add('id_usuario', EntityType::class, [
-                'class' => Usuario::class,
-                'choice_label' => 'id',
-            ])
+            ->add('alojamiento')
+            ->add('gastronomia')
         ;
     }
 

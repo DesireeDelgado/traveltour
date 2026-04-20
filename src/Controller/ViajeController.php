@@ -30,6 +30,9 @@ final class ViajeController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Asignamos automáticamente el usuario que está logueado
+            $viaje->setIdUsuario($this->getUser());
+
             $entityManager->persist($viaje);
             $entityManager->flush();
 
