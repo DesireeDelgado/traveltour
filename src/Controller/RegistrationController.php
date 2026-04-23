@@ -31,14 +31,17 @@ class RegistrationController extends AbstractController
             
             // Asignar los campos requeridos que no se rellenan por el formulario
             $user->setFechaRegistro(new \DateTimeImmutable());
-            $user->setTipo('Viajero'); // Tipo por defecto
+        
+            $user->setRoles(['ROLE_USER']);
 
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // do anything else you need here, like send an email
+            // Guardamos el retorno del login
+            $security->login($user, AppCustomAuthenticator::class, 'main');
 
-            return $security->login($user, AppCustomAuthenticator::class, 'main');
+            // Obligamos físicamente a saltar al dashboard en vez de evaluar qué devuelve Authenticator
+            return $this->redirectToRoute('app_dashboard');
         }
 
         return $this->render('registration/register.html.twig', [

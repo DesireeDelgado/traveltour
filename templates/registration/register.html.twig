@@ -27,13 +27,19 @@
                     <h2 class="text-3xl sm:text-4xl font-bold text-[#191c1d] tracking-tight mb-2">La aventura te espera</h2>
                     <p class="text-[#404850] text-lg mb-8">Create una cuenta y comienza tu viaje</p>
                     
-                    {% if not registrationForm.vars.valid %}
+                    {% set formErrors = form_errors(registrationForm) %}
+                    {% if formErrors %}
                         <div class="w-full text-red-600 mb-4 text-center text-sm font-semibold bg-red-100 p-2 rounded-lg">
-                            {{ form_errors(registrationForm) }}
+                            {{ formErrors|raw }}
                         </div>
                     {% endif %}
 
-                    {{ form_start(registrationForm, {'attr': {'class': 'space-y-6', 'novalidate': 'novalidate'}}) }}
+                    {{ form_start(registrationForm, {'attr': {
+                        'class': 'space-y-6', 
+                        'novalidate': 'novalidate', 
+                        'data-turbo': 'false',
+                        'onsubmit': 'setTimeout(() => { this.querySelector("button[type=submit]").disabled = true; this.querySelector("button[type=submit]").innerText = "Creando cuenta, por favor espera..."; }, 0);'
+                    }}) }}
                         
                         <!-- Nickname Input -->
                         <div>
