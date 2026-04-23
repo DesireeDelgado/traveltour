@@ -40,9 +40,6 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->id;
     }
 
-    #[ORM\Column(length: 50)]
-    private ?string $tipo = null;
-
     #[ORM\Column(length: 100)]
     private ?string $nickname = null;
 
@@ -144,20 +141,6 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials(): void
     {
         // @deprecated, to be removed when upgrading to Symfony 8
-    }
-
-
-
-    public function getTipo(): ?string
-    {
-        return $this->tipo;
-    }
-
-    public function setTipo(string $tipo): static
-    {
-        $this->tipo = $tipo;
-
-        return $this;
     }
 
     public function getNickname(): ?string

@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inicio - TravelTour{% endblock %}
+
+{% block body %}
+    <div class="min-h-screen bg-gradient-to-br from-blue-500 to-teal-400 flex items-center justify-center">
+        <div class="bg-white/20 backdrop-blur-md p-10 rounded-3xl border border-white/30 shadow-2xl text-center">
+            <h1 class="text-4xl font-extrabold text-white mb-4 drop-shadow-lg">
+                ¡Bienvenido a TravelTour!
+            </h1>
+            <p class="text-white text-xl font-light">
+                Este es el <span class="font-bold underline">home logueado</span>.
+            </p>
+            
+            <div class="mt-8">
+                <a href="{{ path('app_logout') }}" class="bg-red-400/80 hover:bg-red-500 text-white px-6 py-2 rounded-full transition-all shadow-md">
+                    Cerrar sesión
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
