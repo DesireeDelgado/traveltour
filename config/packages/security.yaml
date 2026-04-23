@@ -33,6 +33,13 @@ security:
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
+        #RUTAS PUBLICAS
+        - { path: ^/$, roles: PUBLIC_ACCESS }
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/register, roles: PUBLIC_ACCESS }
+
+        ##RUTAS PRIVADAS
+        - { path: ^/, roles: ROLE_USER }
 
 when@test:
     security:

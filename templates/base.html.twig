@@ -24,8 +24,8 @@
                     <img src="{{ asset('img/logo_traveltour.png') }}" alt="TravelTour Logo" class="h-9 w-auto">
                 </a>
                 <nav class="hidden lg:flex items-center gap-9">
-                    <a class="text-[#111518] dark:text-white text-sm font-medium leading-normal hover:text-blue-600 transition-colors" href="{{ path( 'app_viaje_index') }}">Home</a>
-                    <a class="text-[#111518] dark:text-white text-sm font-medium leading-normal hover:text-blue-600 transition-colors" href="{{ path( 'app_viaje_index') }}">Itinerarios</a>
+                    <a class="text-[#111518] dark:text-white text-sm font-medium leading-normal hover:text-blue-600 transition-colors" href="{{ path( 'app_dashboard') }}">Home</a>
+                    <a class="text-[#111518] dark:text-white text-sm font-medium leading-normal hover:text-blue-600 transition-colors" href="{{ path( 'app_viaje_index') }}">Viajes</a>
                     <a class="text-[#111518] dark:text-white text-sm font-medium leading-normal hover:text-blue-600 transition-colors" href="{{ path('app_favoritos_index') }}">Mis Favoritos</a>
                 </nav>
             </div>
@@ -38,15 +38,70 @@
                         <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111518] dark:text-white focus:outline-0 focus:ring-0 border-none bg-[#f0f3f4] dark:bg-slate-800 focus:border-none h-full placeholder:text-[#617989] px-4 rounded-l-none pl-2 text-base font-normal" value=""/>
                     </div>
                 </label>
-                <a href="{{ path( 'app_viaje_new') }}" class="bg-blue-600 flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-blue-700 transition-colors shadow-md">
-                    <span class="truncate">Crear itinerario</span>
+                <a href="{{ path( 'app_viaje_new') }}" class="hidden md:flex bg-blue-600 min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-blue-700 transition-colors shadow-md">
+                    <span class="truncate">Nuevo viaje</span>
                 </a>
-                <a href="{{ path('app_usuario_index') }}">
+                {% if app.user %}
+                <a href="{{ path('app_usuario_index') }}" class="hidden sm:block">
                     <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-[#f0f3f4]" data-alt="User profile avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDKPcoBHWng9b8rm9gSFAZs_3hlgRppa516Jycm-to77f8fLSwEPmYMVdcAnerQrFom8eEX6gh-27OUjD7dd80oMP1ebsw1usD7zZgUjrjvMSAqMYp9QfUtGRCjl5DMKYHHtQpp94qJ41xo40O4n4dDpY3HhDZH6UdgfHWgpG7wpQ9T2SsOukEMYZ6tHOVMjiuAcZE4HDIwxTL30rymQokQmb7FCglnQsEKd6fwB6Pq_5W6rZZHd3tjh67gb05N0nEedGoKTkONTERV");'></div>
                 </a>
+                <a href="{{ path('app_logout') }}" title="Cerrar sesión" class="hidden lg:flex text-red-600 hover:text-red-700 items-center transition-colors">
+                    {{ ux_icon('lucide:log-out', {'class': 'w-6 h-6'}) }}
+                </a>
+                {% endif %}
+
+                <!-- Botón Menú Hamburguesa (visible en pantallas pequeñas) -->
+                <button id="mobile-menu-btn" class="lg:hidden flex items-center justify-center p-2 text-gray-600 hover:text-gray-900 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
             </div>
         </div>
+
+        <!-- Menú desplegable móvil -->
+        <div id="mobile-menu" class="hidden lg:hidden mt-4 pt-4 border-t border-gray-200">
+            <!-- Buscador para móvil -->
+            <div class="px-2 mb-4 w-full">
+                <label class="flex flex-col w-full h-10">
+                    <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+                        <div class="text-[#617989] flex border-none bg-[#f0f3f4] dark:bg-slate-800 items-center justify-center pl-4 rounded-l-lg">
+                            <span class="material-symbols-outlined text-sm font-bold">Buscar</span>
+                        </div>
+                        <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111518] dark:text-white focus:outline-0 focus:ring-0 border-none bg-[#f0f3f4] dark:bg-slate-800 focus:border-none h-full placeholder:text-[#617989] px-4 rounded-l-none pl-2 text-base font-normal" placeholder="Ej. Madrid..." value=""/>
+                    </div>
+                </label>
+            </div>
+            
+            <nav class="flex flex-col gap-4 text-center">
+                <a class="text-[#111518] px-2 text-base font-medium hover:text-blue-600 block" href="{{ path('app_dashboard') }}">Home</a>
+                <a class="text-[#111518] px-2 text-base font-medium hover:text-blue-600 block" href="{{ path('app_viaje_index') }}">Viajes</a>
+                <a class="text-[#111518] px-2 text-base font-medium hover:text-blue-600 block" href="{{ path('app_favoritos_index') }}">Mis Favoritos</a>
+                
+                <div class="border-t border-gray-200 mt-2 pt-4 px-2 flex flex-col items-center gap-4">
+                    <a href="{{ path('app_viaje_new') }}" class="bg-blue-600 text-center rounded-lg h-10 leading-10 text-white text-sm font-bold hover:bg-blue-700 w-full inline-block">
+                        Nuevo viaje
+                    </a>
+                    {% if app.user %}
+                    <a href="{{ path('app_usuario_index') }}" class="text-[#111518] text-base font-medium hover:text-blue-600">Mi Perfil</a>
+                    <a href="{{ path('app_logout') }}" class="text-red-600 text-base font-bold hover:text-red-800">Cerrar sesión</a>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
     </header>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const btn = document.getElementById('mobile-menu-btn');
+            const menu = document.getElementById('mobile-menu');
+            if (btn && menu) {
+                btn.addEventListener('click', function() {
+                    menu.classList.toggle('hidden');
+                });
+            }
+        });
+    </script>
     {% endblock %}
     <main class="flex-1">
             {% block body %}{% endblock %}
