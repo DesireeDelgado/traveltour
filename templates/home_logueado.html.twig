@@ -3,20 +3,23 @@
 {% block title %}Inicio - TravelTour{% endblock %}
 
 {% block body %}
-    <div class="min-h-screen bg-gradient-to-br from-blue-500 to-teal-400 flex items-center justify-center">
-        <div class="bg-white/20 backdrop-blur-md p-10 rounded-3xl border border-white/30 shadow-2xl text-center">
-            <h1 class="text-4xl font-extrabold text-white mb-4 drop-shadow-lg">
-                ¡Bienvenido a TravelTour!
-            </h1>
-            <p class="text-white text-xl font-light">
-                Este es el <span class="font-bold underline">home logueado</span>.
-            </p>
-            
-            <div class="mt-8">
-                <a href="{{ path('app_logout') }}" class="bg-red-400/80 hover:bg-red-500 text-white px-6 py-2 rounded-full transition-all shadow-md">
-                    Cerrar sesión
+    <main class="flex-1">
+        <!-- Hero Section -->
+        <section class="relative h-[560px] w-full">
+            <div class="absolute inset-0 bg-cover bg-center" data-alt="lago alpino" style="background-image: linear-gradient(rgba(13, 22, 28, 0.45), rgba(13, 22, 28, 0.65)), url({{ asset('img/home_lago.jpg') }});"></div>
+            <div class="relative mx-auto flex h-full max-w-[960px] flex-col items-center justify-center px-6 text-center">
+                <h1 class="text-4xl font-black leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
+                    Descubre tu próxima aventura auténtica
+                </h1>
+                <p class="mt-4 text-base font-normal text-slate-100 sm:text-lg mb-8">
+                    Forma parte de una comunidad global de viajeros.
+                </p>
+                
+                <a href="{{ path('app_viaje_index') }}" class="inline-flex h-14 items-center justify-center rounded-xl bg-blue-600 px-8 text-lg font-bold text-white transition-all hover:bg-blue-700 hover:scale-105 shadow-xl">
+                    Comienza a explorar
                 </a>
             </div>
-        </div>
+        </section>
+    </main>
     </div>
 {% endblock %}
