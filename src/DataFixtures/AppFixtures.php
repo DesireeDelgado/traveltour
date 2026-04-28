@@ -17,22 +17,26 @@ class AppFixtures extends Fixture
     }
 
     public function load(ObjectManager $manager): void
-    {   //FIXTURES USUARIOS TO WAPOS
+{
+    $usuariosData = [
+        ['nick' => 'lolamento', 'email' => 'lolamento@traveltour.com'],
+        ['nick' => 'fermin_trujillo', 'email' => 'fermintrujillo@traveltour.com'],
+        ['nick' => 'ines_table', 'email' => 'inestable95@traveltour.com'],
+    ];
+
+    foreach ($usuariosData as $data) {
         $user = new Usuario();
-        $user->setNickname('lolamento');
-        $user->setEmail('lolamento@traveltour.com');
+        $user->setNickname($data['nick']);
+        $user->setEmail($data['email']);
         $user->setRoles(['ROLE_USER']);
         $user->setFechaRegistro(new \DateTimeImmutable());
-
-        // Encriptacion cont
-        $hashedPassword = $this->passwordHasher->hashPassword(
-            $user,
-            '123456'
-        );
+        
+        $hashedPassword = $this->passwordHasher->hashPassword($user, '123456');
         $user->setPassword($hashedPassword);
 
         $manager->persist($user);
+    }
 
-        $manager->flush();
+    $manager->flush();
     }
 }
