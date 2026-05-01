@@ -1,13 +1,14 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Viaje{% endblock %}
+{% block title %}Editar Viaje{% endblock %}
 
 {% block body %}
-    <h1>Edit Viaje</h1>
+    {{ include('viaje/_form.html.twig', {'button_label': 'Actualizar', 'is_edit': true}) }}
 
-    {{ include('viaje/_form.html.twig', {'button_label': 'Update'}) }}
-
-    <a href="{{ path('app_viaje_index') }}">back to list</a>
-
-    {{ include('viaje/_delete_form.html.twig') }}
+    <div class="max-w-4xl mx-auto px-6 mb-12">
+        <a href="{{ path('app_viaje_index') }}" class="text-blue-600 hover:underline">Volver a la lista</a>
+        <div class="mt-4">
+            {{ include('viaje/_delete_form.html.twig') }}
+        </div>
+    </div>
 {% endblock %}
