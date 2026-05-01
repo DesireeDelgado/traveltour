@@ -41,7 +41,7 @@
                     <span class="truncate">Nuevo viaje</span>
                 </a>
                 {% if app.user %}
-                <a href="{{ path('app_usuario_index') }}" class="hidden sm:block">
+                <a href="{{ path('app_usuario_show', {'id': app.user.id}) }}" class="hidden sm:block">
                     <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-[#f0f3f4]" data-alt="User profile avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDKPcoBHWng9b8rm9gSFAZs_3hlgRppa516Jycm-to77f8fLSwEPmYMVdcAnerQrFom8eEX6gh-27OUjD7dd80oMP1ebsw1usD7zZgUjrjvMSAqMYp9QfUtGRCjl5DMKYHHtQpp94qJ41xo40O4n4dDpY3HhDZH6UdgfHWgpG7wpQ9T2SsOukEMYZ6tHOVMjiuAcZE4HDIwxTL30rymQokQmb7FCglnQsEKd6fwB6Pq_5W6rZZHd3tjh67gb05N0nEedGoKTkONTERV");'></div>
                 </a>
                 <a href="{{ path('app_logout') }}" title="Cerrar sesión" class="hidden lg:flex text-red-600 hover:text-red-700 items-center transition-colors">
@@ -82,7 +82,7 @@
                         Nuevo viaje
                     </a>
                     {% if app.user %}
-                    <a href="{{ path('app_usuario_index') }}" class="text-[#111518] text-base font-medium hover:text-blue-600">Mi Perfil</a>
+                    <a href="{{ path('app_usuario_show', {'id': app.user.id}) }}" class="text-[#111518] text-base font-medium hover:text-blue-600">Mi Perfil</a>
                     <a href="{{ path('app_logout') }}" class="text-red-600 text-base font-bold hover:text-red-800">Cerrar sesión</a>
                     {% endif %}
                 </div>

@@ -1,13 +1,106 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Usuario{% endblock %}
+{% block title %}Editar Perfil - TravelTour{% endblock %}
 
 {% block body %}
-    <h1>Edit Usuario</h1>
+<main class="min-h-screen pt-4 pb-24 px-6 mt-8 md:mt-12">
+    <div class="max-w-2xl mx-auto">
+        <!-- Back Button -->
+        <div class="flex items-center gap-4 mb-6">
+            <a href="{{ path('app_usuario_show', {'id': usuario.id}) }}" class="flex items-center gap-2 group text-gray-500 hover:text-blue-600 transition-colors">
+                <span class="bg-gray-100 group-hover:bg-blue-100 p-2 rounded-full transition-all duration-200 flex items-center justify-center">
+                    {{ ux_icon('lucide:arrow-left', {'class': 'w-5 h-5'}) }}
+                </span>
+                <span class="font-semibold tracking-tight">Volver al perfil</span>
+            </a>
+        </div>
 
-    {{ include('usuario/_form.html.twig', {'button_label': 'Update'}) }}
+        <!-- Edit Profile Title -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900 mb-2 font-display">Editar Perfil</h1>
+            <p class="text-gray-500 text-base">Actualiza tu información pública para la comunidad de TravelTour.</p>
+        </div>
 
-    <a href="{{ path('app_usuario_index') }}">back to list</a>
+        <!-- Form Container -->
+        <div class="bg-white p-8 md:p-10 rounded-xl shadow-sm border border-gray-200">
+            <!-- Avatar Section (Visual Only) -->
+            <div class="flex flex-col items-center mb-10">
+                <div class="relative group cursor-pointer" onclick="alert('La subida de fotos estará disponible muy pronto.')">
+                    <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-surface ring-2 ring-primary-container shadow-md transition-all group-hover:opacity-90">
+                        {% if usuario.urlFotoPerfil %}
+                            <img src="{{ usuario.urlFotoPerfil }}" alt="Avatar de {{ usuario.nickname }}" class="w-full h-full object-cover">
+                        {% else %}
+                            <img src="https://ui-avatars.com/api/?name={{ usuario.nickname|url_encode }}&background=0D8ABC&color=fff&size=256" alt="Avatar por defecto" class="w-full h-full object-cover">
+                        {% endif %}
+                    </div>
+                    <button type="button" class="absolute bottom-1 right-1 bg-blue-600 text-white p-2 rounded-full shadow-lg hover:bg-blue-700 transition-colors active:scale-90 flex items-center justify-center">
+                        {{ ux_icon('lucide:pencil', {'class': 'w-5 h-5'}) }}
+                    </button>
+                </div>
+                <p class="mt-4 font-bold text-xs text-blue-600 uppercase tracking-wider">Cambiar Foto de Perfil</p>
+            </div>
 
-    {{ include('usuario/_delete_form.html.twig') }}
+            <!-- Form Fields -->
+            {{ form_start(form, {'attr': {'class': 'space-y-8', 'id': 'edit_user_form'}}) }}
+                
+                <!-- Nickname Field -->
+                <div>
+                    {{ form_label(form.nickname, 'Nickname', {'label_attr': {'class': 'block font-bold text-gray-800 mb-2'}}) }}
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">
+                            {{ ux_icon('lucide:at-sign', {'class': 'w-5 h-5'}) }}
+                        </span>
+                        {{ form_widget(form.nickname) }}
+                    </div>
+                    <p class="mt-2 text-sm text-gray-500 italic">Así es como otros viajeros te encontrarán.</p>
+                    <div class="text-red-500 text-sm mt-1">
+                        {{ form_errors(form.nickname) }}
+                    </div>
+                </div>
+
+                <!-- Biography Field -->
+                <div>
+                    {{ form_label(form.biografia, 'Biografía', {'label_attr': {'class': 'block font-bold text-gray-800 mb-2'}}) }}
+                    {{ form_widget(form.biografia) }}
+                    <div class="text-red-500 text-sm mt-1">
+                        {{ form_errors(form.biografia) }}
+                    </div>
+                </div>
+
+                <!-- Disable CSRF/hidden fields as needed by form_rest, but we will render form_rest to finish the form -->
+                <div class="hidden">
+                    {{ form_rest(form) }}
+                </div>
+
+                <!-- Actions -->
+                <div class="pt-6 flex flex-col sm:flex-row items-center justify-end gap-6 border-t border-gray-200">
+                    <a href="{{ path('app_usuario_show', {'id': usuario.id}) }}" class="text-gray-500 font-bold hover:text-gray-800 transition-colors order-2 sm:order-1">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="w-full sm:w-auto bg-blue-600 text-white px-10 py-3.5 rounded-lg font-bold hover:bg-blue-700 active:scale-95 transition-all shadow-md order-1 sm:order-2">
+                        Guardar Cambios
+                    </button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="mt-12 bg-red-50 border border-red-200 rounded-xl p-8">
+            <h2 class="text-xl font-bold text-red-700 mb-4 flex items-center gap-2">
+                {{ ux_icon('lucide:alert-triangle', {'class': 'w-6 h-6'}) }}
+                Zona de Peligro
+            </h2>
+            <p class="text-red-600 mb-6">
+                Una vez que elimines tu cuenta, no hay vuelta atrás. Asegúrate de estar completamente seguro de guardar tus recuerdos antes de proceder.
+            </p>
+            <form method="post" action="{{ path('app_usuario_delete', {'id': usuario.id}) }}" onsubmit="return confirm('¿Estás SEGURO de que quieres borrar tu cuenta? Esta acción no se puede deshacer.');">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ usuario.id) }}">
+                <button type="submit" class="bg-red-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-red-700 active:scale-95 transition-all shadow-sm flex items-center justify-center gap-2">
+                    {{ ux_icon('lucide:trash-2', {'class': 'w-5 h-5'}) }}
+                    Eliminar Cuenta
+                </button>
+            </form>
+        </div>
+    </div>
+</main>
 {% endblock %}

@@ -15,16 +15,14 @@ class UsuarioType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('email')
-            ->add('roles', CollectionType::class)
-            ->add('password')
-            ->add('tipo')
-            ->add('nickname')
-            ->add('biografia')
-            ->add('fecha_registro', null, [
-                'widget' => 'single_text',
+            ->add('nickname', null, [
+                'label' => 'Nickname',
+                'attr' => ['placeholder' => 'Tu alias único', 'class' => 'w-full pl-11 pr-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all font-body-md text-gray-800 bg-gray-50']
             ])
-            ->add('url_foto_perfil')
+            ->add('biografia', null, [
+                'label' => 'Biografía',
+                'attr' => ['placeholder' => 'Cuéntanos sobre tu estilo de viaje...', 'rows' => 5, 'class' => 'w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all font-body-md text-gray-800 bg-gray-50 resize-none']
+            ])
         ;
     }
 
