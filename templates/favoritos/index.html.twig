@@ -1,33 +1,76 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Favoritos index{% endblock %}
+{% block title %}Mis Favoritos{% endblock %}
 
 {% block body %}
-    <h1>Favoritos index</h1>
+<main class="max-w-6xl mx-auto px-6 py-12">
+    <div class="flex items-center justify-between mb-10">
+        <div>
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-2 font-display">Mis Viajes Favoritos</h1>
+            <p class="text-slate-500 text-lg">Tus próximas aventuras guardadas en un solo lugar.</p>
+        </div>
+    </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {% for favorito in favoritos %}
-            <tr>
-                <td>{{ favorito.id }}</td>
-                <td>
-                    <a href="{{ path('app_favoritos_show', {'id': favorito.id}) }}">show</a>
-                    <a href="{{ path('app_favoritos_edit', {'id': favorito.id}) }}">edit</a>
-                </td>
-            </tr>
+            {% set viaje = favorito.idViaje %}
+            
+            <!-- Card -->
+            <div class="group flex flex-col overflow-hidden rounded-xl bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-md dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
+                <div class="relative aspect-[16/10] overflow-hidden">
+                    <a href="{{ path('app_viaje_show', {'id': viaje.id}) }}" class="block w-full h-full">
+                        <img class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                             alt="{{ viaje.titulo }}" 
+                             src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_fabT81jRizmamsEUioeEM9bgPdIzCRrmoRJjnbu3a-aTHpxvjZ8dUN9nMGrjzAZq_OOlRnd6oTigO7ZUJK09A7wFcZRVnOQMlQd83Y6SIUTyCQQKWMpWrVgXuKYVN0oWTamrcDkY-9bn4kKzmclEx8pQPX1G85W5EIeBR6SppAVyh6UiB43b5CZ2JKE_gs3XLiC8MttQSPDnt5YwXPGN5PISN3M5m9jy4UDazk9fi-J9SUX1tT4kYr7Eg2m_btgfAGxOVThSAtYv"/>
+                    </a>
+                    
+                    {# Botón para quitar de favoritos directamente desde aquí #}
+                    <a href="{{ path('app_favoritos_toggle', {'id': viaje.id}) }}" 
+                       class="absolute right-3 top-3 z-10 rounded-full p-2 shadow-sm backdrop-blur transition-all bg-rose-500 text-white hover:bg-rose-600">
+                        {{ ux_icon('lucide:heart', {'class': 'w-5 h-5 fill-current'}) }}
+                    </a>
+                    
+                    <div class="absolute left-3 top-3 rounded-lg bg-teal-600 px-3 py-1 text-xs font-bold text-white shadow-sm">
+                        {{ viaje.duracion }} Días
+                    </div>
+                </div>
+                
+                <div class="flex flex-1 flex-col p-5">
+                    <a href="{{ path('app_viaje_show', {'id': viaje.id}) }}" class="flex-1">
+                        <h3 class="text-lg font-bold leading-snug text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white line-clamp-2">
+                            {{ viaje.titulo }}
+                        </h3>
+                    </a>
+                    
+                    <div class="mt-4 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="h-6 w-6 rounded-full bg-slate-200 overflow-hidden flex-shrink-0">
+                                {% if viaje.idUsuario %}
+                                    <img class="h-full w-full object-cover" 
+                                         alt="{{ viaje.idUsuario.nickname }}" 
+                                         src="{{ viaje.idUsuario.urlFotoPerfil|default('https://ui-avatars.com/api/?background=random&color=fff&name=' ~ viaje.idUsuario.nickname) }}"/>
+                                {% endif %}
+                            </div>
+                            <span class="text-xs font-medium text-slate-500">
+                                by @{{ viaje.idUsuario ? viaje.idUsuario.nickname : 'Anónimo' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         {% else %}
-            <tr>
-                <td colspan="2">no records found</td>
-            </tr>
+            {# --- ESTADO VACÍO --- #}
+            <div class="col-span-full py-20 text-center text-slate-500 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+                {{ ux_icon('lucide:heart-off', {'class': 'w-16 h-16 mx-auto mb-4 text-slate-300'}) }}
+                <p class="text-xl font-bold text-slate-600 dark:text-slate-300 mb-2">Todavía no tienes viajes favoritos</p>
+                <p class="text-slate-400 mb-8 px-4">Explora las aventuras de otros usuarios y guarda las que más te gusten.</p>
+                
+                <a href="{{ path('app_viaje_index') }}" class="inline-flex items-center gap-2 bg-blue-600 text-white px-8 py-3 rounded-full font-bold shadow-lg hover:bg-blue-700 hover:shadow-blue-500/30 transition-all active:scale-95">
+                    {{ ux_icon('lucide:compass', {'class': 'w-5 h-5'}) }}
+                    Explorar viajes
+                </a>
+            </div>
         {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_favoritos_new') }}">Create new</a>
+    </div>
+</main>
 {% endblock %}
