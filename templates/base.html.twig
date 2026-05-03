@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{% block title %}TravelTour{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        
         {% block stylesheets %}
             {{ vite_entry_link_tags('app') }}
         {% endblock %}
@@ -15,75 +16,94 @@
         {% endblock %}
     </head>
     <body class="flex flex-col min-h-screen bg-[#f4f8fb] text-[#111518]">
+    
     {% block header %}
     <header class="sticky top-0 z-50 w-full border-b border-solid border-[#f0f3f4] bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-6 md:px-10 py-3">
         <div class="max-w-[1280px] mx-auto flex items-center justify-between gap-8 whitespace-nowrap">
+            
             <div class="flex items-center gap-8">
                 <a href="{{ path('app_viaje_index')|default('/') }}" class="flex items-center gap-4 text-primary hover:opacity-90 transition-opacity">
                     <img src="{{ asset('img/logo_traveltour.png') }}" alt="TravelTour Logo" class="h-9 w-auto">
                 </a>
+                
                 <nav class="hidden lg:flex items-center gap-9">
-                    <a class="text-[#111518] dark:text-white text-sm font-medium leading-normal hover:text-blue-600 transition-colors" href="{{ path( 'app_dashboard') }}">Home</a>
-                    <a class="text-[#111518] dark:text-white text-sm font-medium leading-normal hover:text-blue-600 transition-colors" href="{{ path( 'app_viaje_index') }}">Viajes</a>
-                    <a class="text-[#111518] dark:text-white text-sm font-medium leading-normal hover:text-blue-600 transition-colors" href="{{ path('app_favoritos_index') }}">Mis Favoritos</a>
+                    <a class="text-[#111518] dark:text-white text-sm font-medium hover:text-blue-600 transition-colors" href="{{ path('app_dashboard') }}">Home</a>
+                    <a class="text-[#111518] dark:text-white text-sm font-medium hover:text-blue-600 transition-colors" href="{{ path('app_viaje_index') }}">Viajes</a>
+                    <a class="text-[#111518] dark:text-white text-sm font-medium hover:text-blue-600 transition-colors" href="{{ path('app_favoritos_index') }}">Mis Favoritos</a>
                 </nav>
             </div>
+
             <div class="flex flex-1 justify-end gap-4 items-center">
-                <label class="hidden sm:flex flex-col min-w-40 !h-10 max-w-64">
-                    <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
-                        <div class="text-[#617989] flex border-none bg-[#f0f3f4] dark:bg-slate-800 items-center justify-center pl-4 rounded-l-lg" data-icon="MagnifyingGlass">
-                            <span class="material-symbols-outlined">Buscar</span>
+                
+                {# Buscador Escritorio #}
+                <label class="hidden lg:flex flex-col min-w-40 !h-10 max-w-64">
+                    <div class="flex w-full flex-1 items-stretch rounded-lg h-full bg-[#f0f3f4] dark:bg-slate-800">
+                        <div class="text-[#617989] flex items-center justify-center pl-4">
+                            <span class="material-symbols-outlined font-bold text-sm">Buscar</span>
                         </div>
-                        <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111518] dark:text-white focus:outline-0 focus:ring-0 border-none bg-[#f0f3f4] dark:bg-slate-800 focus:border-none h-full placeholder:text-[#617989] px-4 rounded-l-none pl-2 text-base font-normal" value=""/>
+                        <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111518] dark:text-white focus:outline-0 focus:ring-0 border-none bg-transparent h-full px-4 rounded-l-none pl-2 text-base font-normal" value=""/>
                     </div>
                 </label>
-                <a href="{{ path( 'app_viaje_new') }}" class="hidden md:flex bg-blue-600 min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-blue-700 transition-colors shadow-md">
-                    <span class="truncate">Nuevo viaje</span>
+
+                {# Botón Nuevo Viaje Escritorio (Oculto en pantallas menores a lg) #}
+                <a href="{{ path('app_viaje_new') }}" class="hidden lg:flex bg-blue-600 min-w-[84px] items-center justify-center rounded-lg h-10 px-4 text-white text-sm font-bold hover:bg-blue-700 transition-colors shadow-md">
+                    Nuevo viaje
                 </a>
+
                 {% if app.user %}
-                <a href="{{ path('app_usuario_show', {'id': app.user.id}) }}" class="hidden sm:block">
-                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-[#f0f3f4]" data-alt="User profile avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDKPcoBHWng9b8rm9gSFAZs_3hlgRppa516Jycm-to77f8fLSwEPmYMVdcAnerQrFom8eEX6gh-27OUjD7dd80oMP1ebsw1usD7zZgUjrjvMSAqMYp9QfUtGRCjl5DMKYHHtQpp94qJ41xo40O4n4dDpY3HhDZH6UdgfHWgpG7wpQ9T2SsOukEMYZ6tHOVMjiuAcZE4HDIwxTL30rymQokQmb7FCglnQsEKd6fwB6Pq_5W6rZZHd3tjh67gb05N0nEedGoKTkONTERV");'></div>
-                </a>
-                <a href="{{ path('app_logout') }}" title="Cerrar sesión" class="hidden lg:flex text-red-600 hover:text-red-700 items-center transition-colors">
-                    {{ ux_icon('lucide:log-out', {'class': 'w-6 h-6'}) }}
-                </a>
+                    {% set nav_avatar_url = app.user.urlFotoPerfil|default('https://ui-avatars.com/api/?name=' ~ app.user.nickname|url_encode) %}
+
+                    <a href="{{ path('app_usuario_show', {'id': app.user.id}) }}" class="hidden lg:block">
+                        <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-[#f0f3f4] transition-all hover:ring-2 hover:ring-blue-500/50" 
+                             style='background-image: url("{{ nav_avatar_url }}");' title="Mi Perfil">
+                        </div>
+                    </a>
+
+                    <a href="{{ path('app_logout') }}" title="Cerrar sesión" class="hidden lg:flex text-red-600 hover:text-red-700 items-center transition-colors">
+                        {{ ux_icon('lucide:log-out', {'class': 'w-6 h-6'}) }}
+                    </a>
                 {% endif %}
 
-                <!-- Botón Menú Hamburguesa (visible en pantallas pequeñas) -->
                 <button id="mobile-menu-btn" class="lg:hidden flex items-center justify-center p-2 text-gray-600 hover:text-gray-900 focus:outline-none">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
                 </button>
             </div>
         </div>
 
-        <!-- Menú desplegable móvil -->
+        {# --- MENÚ DESPLEGABLE MÓVIL --- #}
         <div id="mobile-menu" class="hidden lg:hidden mt-4 pt-4 border-t border-gray-200">
-            <!-- Buscador para móvil -->
+            
             <div class="px-2 mb-4 w-full">
                 <label class="flex flex-col w-full h-10">
-                    <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
-                        <div class="text-[#617989] flex border-none bg-[#f0f3f4] dark:bg-slate-800 items-center justify-center pl-4 rounded-l-lg">
+                    <div class="flex w-full flex-1 items-stretch rounded-lg h-full bg-[#f0f3f4] dark:bg-slate-800">
+                        <div class="text-[#617989] flex items-center justify-center pl-4">
                             <span class="material-symbols-outlined text-sm font-bold">Buscar</span>
                         </div>
-                        <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111518] dark:text-white focus:outline-0 focus:ring-0 border-none bg-[#f0f3f4] dark:bg-slate-800 focus:border-none h-full placeholder:text-[#617989] px-4 rounded-l-none pl-2 text-base font-normal" placeholder="Ej. Madrid..." value=""/>
+                        <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111518] dark:text-white focus:outline-0 focus:ring-0 border-none bg-transparent h-full px-4 rounded-l-none pl-2 text-base font-normal" placeholder="Ej. Madrid..." value=""/>
                     </div>
                 </label>
             </div>
             
-            <nav class="flex flex-col gap-4 text-center">
-                <a class="text-[#111518] px-2 text-base font-medium hover:text-blue-600 block" href="{{ path('app_dashboard') }}">Home</a>
-                <a class="text-[#111518] px-2 text-base font-medium hover:text-blue-600 block" href="{{ path('app_viaje_index') }}">Viajes</a>
-                <a class="text-[#111518] px-2 text-base font-medium hover:text-blue-600 block" href="{{ path('app_favoritos_index') }}">Mis Favoritos</a>
+            <nav class="flex flex-col gap-4 text-center pb-4">
+                <a class="text-[#111518] dark:text-white px-2 text-base font-medium hover:text-blue-600 block transition-colors" href="{{ path('app_dashboard') }}">Home</a>
+                <a class="text-[#111518] dark:text-white px-2 text-base font-medium hover:text-blue-600 block transition-colors" href="{{ path('app_viaje_index') }}">Viajes</a>
+                <a class="text-[#111518] dark:text-white px-2 text-base font-medium hover:text-blue-600 block transition-colors" href="{{ path('app_favoritos_index') }}">Mis Favoritos</a>
                 
-                <div class="border-t border-gray-200 mt-2 pt-4 px-2 flex flex-col items-center gap-4">
-                    <a href="{{ path('app_viaje_new') }}" class="bg-blue-600 text-center rounded-lg h-10 leading-10 text-white text-sm font-bold hover:bg-blue-700 w-full inline-block">
+                {% if app.user %}
+                    <a class="text-[#111518] dark:text-white px-2 text-base font-medium hover:text-blue-600 block transition-colors" href="{{ path('app_usuario_show', {'id': app.user.id}) }}">Mi Perfil</a>
+                {% endif %}
+                
+                <div class="border-t border-gray-200 dark:border-slate-800 mt-2 pt-4 px-2 flex flex-col items-center gap-4">
+                    <a href="{{ path('app_viaje_new') }}" class="bg-blue-600 text-center rounded-lg h-10 leading-10 text-white text-sm font-bold hover:bg-blue-700 w-full inline-block transition-colors">
                         Nuevo viaje
                     </a>
+                    
                     {% if app.user %}
-                    <a href="{{ path('app_usuario_show', {'id': app.user.id}) }}" class="text-[#111518] text-base font-medium hover:text-blue-600">Mi Perfil</a>
-                    <a href="{{ path('app_logout') }}" class="text-red-600 text-base font-bold hover:text-red-800">Cerrar sesión</a>
+                        <a href="{{ path('app_logout') }}" class="text-red-600 text-base font-bold hover:text-red-800 transition-colors">
+                            Cerrar sesión
+                        </a>
                     {% endif %}
                 </div>
             </nav>
@@ -102,42 +122,46 @@
         });
     </script>
     {% endblock %}
+
     <main class="flex-1">
-            {% block body %}{% endblock %}
+        {% block body %}{% endblock %}
     </main>
+
     <footer class="w-full bg-white dark:bg-slate-900 border-t border-[#f0f3f4] dark:border-slate-800">
-            <div class="max-w-[1280px] mx-auto px-10 py-8"> <div class="flex flex-wrap justify-center gap-12 text-center md:text-left">
+    <div class="max-w-[1280px] mx-auto px-10 py-8"> 
+        <div class="flex flex-wrap justify-center gap-12 text-center md:text-left">
 
-                    <div class="w-full md:w-auto md:max-w-[300px] flex flex-col items-center md:items-start">
-                        <div class="flex items-center gap-3 mb-6">
-                            <img src="{{ asset('img/logo_traveltour.png') }}" alt="TravelTour Logo" class="h-10 w-auto">
-                        </div>
-                        <p class="text-[#617989] text-sm">La comunidad más grande del mundo de itinerarios de viaje auténticos y basados en experiencias.</p>
-                    </div>
-
-                    <div class="min-w-[150px]">
-                        <h4 class="font-bold mb-4 text-[#111518] dark:text-white">Plataforma</h4>
-                        <ul class="space-y-2 text-sm text-[#617989]">
-                            <li><a class="hover:text-blue-600 transition-colors" href="#">Guías</a></li>
-                            <li><a class="hover:text-blue-600 transition-colors" href="#">Creadores</a></li>
-                            <li><a class="hover:text-blue-600 transition-colors" href="#">Comunidad</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="min-w-[150px]">
-                        <h4 class="font-bold mb-4 text-[#111518] dark:text-white">Soporte</h4>
-                        <ul class="space-y-2 text-sm text-[#617989]">
-                            <li><a class="hover:text-blue-600 transition-colors" href="#">Seguridad</a></li>
-                            <li><a class="hover:text-blue-600 transition-colors" href="#">Política de privacidad</a></li>
-                            <li><a class="hover:text-blue-600 transition-colors" href="#">Términos del servicio</a></li>
-                        </ul>
-                    </div>
-
+            <div class="w-full md:w-auto md:max-w-[300px] flex flex-col items-center md:items-start">
+                <div class="flex items-center gap-3 mb-6">
+                    <img src="{{ asset('img/logo_traveltour.png') }}" alt="TravelTour Logo" class="h-10 w-auto">
                 </div>
-                <div class="border-t border-[#f0f3f4] dark:border-slate-800 mt-8 pt-6 text-center text-sm text-[#617989]">
-                    © 2026 TravelTour. Todos los derechos reservados.
-                </div>
+                <p class="text-[#617989] text-sm">La comunidad más grande del mundo de itinerarios de viaje auténticos y basados en experiencias.</p>
             </div>
-    </footer>
+
+            <div class="min-w-[150px]">
+                <h4 class="font-bold mb-4 text-[#111518] dark:text-white">Plataforma</h4>
+                <ul class="space-y-2 text-sm text-[#617989]">
+                    {# Estos enlaces forzarán el login si la ruta está protegida en security.yaml #}
+                    <li><a class="hover:text-blue-600 transition-colors" href="{{ path('app_viaje_index') }}">Explorar Viajes</a></li>
+                    <li><a class="hover:text-blue-600 transition-colors" href="{{ path('app_viaje_new') }}">Publicar Ruta</a></li>
+                    <li><a class="hover:text-blue-600 transition-colors" href="{{ path('app_favoritos_index') }}">Mis Favoritos</a></li>
+                </ul>
+            </div>
+
+            <div class="min-w-[150px]">
+                <h4 class="font-bold mb-4 text-[#111518] dark:text-white">Soporte</h4>
+                <ul class="space-y-2 text-sm text-[#617989]">
+                    <li><a class="hover:text-blue-600 transition-colors" href="https://www.incibe.es/ciudadania/formacion/guias/guia-de-privacidad-y-seguridad-en-internet">Seguridad</a></li>
+                    <li><a class="hover:text-blue-600 transition-colors" href="https://es.wikipedia.org/wiki/Política_de_privacidad">Política de privacidad</a></li>
+                    <li><a class="hover:text-blue-600 transition-colors" href="https://es.wikipedia.org/wiki/Términos_de_servicio">Términos del servicio</a></li>
+                </ul>
+            </div>
+
+        </div>
+        <div class="border-t border-[#f0f3f4] dark:border-slate-800 mt-8 pt-6 text-center text-sm text-[#617989]">
+            © {{ "now"|date("Y") }} TravelTour. Todos los derechos reservados.
+        </div>
+    </div>
+</footer>
     </body>
 </html>
