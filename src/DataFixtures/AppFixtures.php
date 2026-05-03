@@ -60,12 +60,54 @@ class AppFixtures extends Fixture
             'fermin_trujillo' => [
                 'email' => 'fermintrujillo@traveltour.com',
                 'bio' => 'Viajar para mí significa comer bien, caminar mucho y volver con mil fotos y mejores anécdotas.',
-                'viajes' => [] // Sin viajes por ahora
+                'viajes' => [
+                    [
+                        'titulo' => 'Sabor y calle en Ciudad de México',
+                        'destino' => 'Ciudad de México',
+                        'duracion' => 6,
+                        'presupuesto' => 800.00,
+                        'contenido' => 'Tacos al pastor, mercados coloridos y barrios con mucha vida para explorar a pie.',
+                        'alojamiento' => 'Hostal céntrico con ambiente joven.',
+                        'gastronomia' => 'Tacos, quesadillas, elote y aguas frescas.',
+                        'fecha' => new \DateTimeImmutable('-10 days'),
+                    ],
+                    [
+                        'titulo' => 'Paseos y sabores en Barcelona',
+                        'destino' => 'Barcelona',
+                        'duracion' => 4,
+                        'presupuesto' => 700.00,
+                        'contenido' => 'Paseos por el Born, tapas en la Barceloneta y una mezcla perfecta de cultura y playa.',
+                        'alojamiento' => 'Apartamento turístico cerca de la Sagrada Familia.',
+                        'gastronomia' => 'Tapas, paella y vermut casero.',
+                        'fecha' => new \DateTimeImmutable('-7 days'),
+                    ],
+                ] 
             ],
             'ines_table' => [
                 'email' => 'inestable95@traveltour.com',
                 'bio' => 'Busco destinos con encanto, alojamientos acogedores y experiencias auténticas que contar.',
-                'viajes' => []
+                'viajes' => [
+                    [
+                        'titulo' => 'Encanto rural en la Toscana',
+                        'destino' => 'Toscana',
+                        'duracion' => 6,
+                        'presupuesto' => 1100.00,
+                        'contenido' => 'Pueblos medievales, viñedos y una escapada perfecta para desconectar.',
+                        'alojamiento' => 'Casa rural con piscina y vistas a los campos.',
+                        'gastronomia' => 'Vino Chianti, pasta casera y postres tradicionales.',
+                        'fecha' => new \DateTimeImmutable('-15 days'),
+                    ],
+                        [
+                            'titulo' => 'Aventura urbana en Berlín',
+                            'destino' => 'Berlín',
+                            'duracion' => 4,
+                            'presupuesto' => 750.00,
+                            'contenido' => 'Historia, arte urbano y una escena cultural vibrante para explorar.',
+                            'alojamiento' => 'Hostel moderno en el centro de la ciudad.',
+                            'gastronomia' => 'Currywurst, doner kebab y cerveza artesanal.',
+                            'fecha' => new \DateTimeImmutable('-5 days'),
+                        ],
+                ]
             ],
         ];
 
