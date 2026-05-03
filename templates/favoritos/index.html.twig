@@ -51,9 +51,15 @@
                                          src="{{ viaje.idUsuario.urlFotoPerfil|default('https://ui-avatars.com/api/?background=random&color=fff&name=' ~ viaje.idUsuario.nickname) }}"/>
                                 {% endif %}
                             </div>
-                            <span class="text-xs font-medium text-slate-500">
-                                by @{{ viaje.idUsuario ? viaje.idUsuario.nickname : 'Anónimo' }}
-                            </span>
+                              <span class="text-xs font-medium text-slate-500 dark:text-slate-400 truncate max-w-[100px]">
+                                                {% if viaje.idUsuario %}
+                                                     <a href="{{ path('app_usuario_show', {'id': viaje.idUsuario.id}) }}" class="hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white px-1.5 py-0.5 -ml-1.5 rounded transition-all duration-200">
+                                                        by @{{ viaje.idUsuario.nickname }}
+                                                     </a>
+                                                {% else %}
+                                                    by @Anónimo
+                                                {% endif %}
+                              </span>
                         </div>
                     </div>
                 </div>

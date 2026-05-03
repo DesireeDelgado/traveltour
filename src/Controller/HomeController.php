@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Repository\ViajeRepository;
 
 class HomeController extends AbstractController
 {
@@ -19,8 +20,14 @@ class HomeController extends AbstractController
     //Home protegida para usuarios logueados
     #[Route('/home', name: 'app_dashboard')]
     #[IsGranted('ROLE_USER')] 
-    public function dashboard(): Response
+   public function dashboard(ViajeRepository $viajeRepository): Response 
     {
-        return $this->render('home_logueado.html.twig');
+        //Obtencion de viajes mas populares
+        $viajesPopulares = $viajeRepository->findTopPopulares(3);
+
+        //Renderizado de la vista con los viajes populares
+        return $this->render('home_logueado.html.twig', [
+            'viajes_populares' => $viajesPopulares,
+        ]);
     }
 }

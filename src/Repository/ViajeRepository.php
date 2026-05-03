@@ -40,4 +40,15 @@ class ViajeRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+    //Ordenar por los que mas favoritos tienen
+    public function findTopPopulares(int $limit = 3): array
+{
+    return $this->createQueryBuilder('v')
+        ->leftJoin('v.favoritos', 'f')
+        ->groupBy('v.id')
+        ->orderBy('COUNT(f.id)', 'DESC')
+        ->setMaxResults($limit)
+        ->getQuery()
+        ->getResult();
+}
 }
