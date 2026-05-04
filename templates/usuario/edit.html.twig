@@ -41,7 +41,7 @@
             </div>
 
             <!-- Form Fields -->
-            {{ form_start(form, {'attr': {'class': 'space-y-8', 'id': 'edit_user_form'}}) }}
+            {{ form_start(form, {'attr': {'class': 'space-y-8', 'id': 'edit_user_form', 'onsubmit': 'if(this.dataset.submitted) return false; this.dataset.submitted=true; this.querySelector("button[type=submit]").innerText="Guardando...";'}}) }}
                 
                 <!-- Nickname Field -->
                 <div>
@@ -64,6 +64,47 @@
                     {{ form_widget(form.biografia) }}
                     <div class="text-red-500 text-sm mt-1">
                         {{ form_errors(form.biografia) }}
+                    </div>
+                </div>
+
+                <!-- Password Change Section -->
+                <div class="border-t border-gray-200 pt-6 mt-6">
+                    <button type="button" class="text-blue-600 font-bold flex items-center gap-2 hover:text-blue-800 transition-colors" onclick="document.getElementById('password_section').classList.toggle('hidden')">
+                        {{ ux_icon('lucide:lock', {'class': 'w-5 h-5'}) }}
+                        Modificar contraseña
+                    </button>
+                    
+                    <div id="password_section" class="{% if not form.current_password.vars.valid or not form.plainPassword.vars.valid %}block{% else %}hidden{% endif %} mt-6 space-y-6 bg-blue-50/50 p-6 rounded-xl border border-blue-100">
+                        <!-- Current password -->
+                        <div>
+                            {{ form_label(form.current_password, 'Escribe la contraseña actual', {'label_attr': {'class': 'block font-bold text-gray-800 mb-2'}}) }}
+                            {{ form_widget(form.current_password) }}
+                            <div class="text-red-500 text-sm mt-1">
+                                {{ form_errors(form.current_password) }}
+                            </div>
+                        </div>
+                        
+                        <!-- New password -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                {{ form_label(form.plainPassword.first, 'Escribe la nueva contraseña', {'label_attr': {'class': 'block font-bold text-gray-800 mb-2'}}) }}
+                                {{ form_widget(form.plainPassword.first, {'attr': {'placeholder': 'Min 6 caracteres'}}) }}
+                                <div class="text-red-500 text-sm mt-1">
+                                    {{ form_errors(form.plainPassword.first) }}
+                                </div>
+                            </div>
+                            
+                            <div>
+                                {{ form_label(form.plainPassword.second, 'Repetir la nueva contraseña', {'label_attr': {'class': 'block font-bold text-gray-800 mb-2'}}) }}
+                                {{ form_widget(form.plainPassword.second, {'attr': {'placeholder': 'Repite la contraseña'}}) }}
+                                <div class="text-red-500 text-sm mt-1">
+                                    {{ form_errors(form.plainPassword.second) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-red-500 text-sm mt-1">
+                            {{ form_errors(form.plainPassword) }}
+                        </div>
                     </div>
                 </div>
 

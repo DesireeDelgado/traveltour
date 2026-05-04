@@ -10,6 +10,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Form\FormError;
 
 #[Route('/usuario')]
 final class UsuarioController extends AbstractController
@@ -52,7 +54,7 @@ final class UsuarioController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_usuario_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Usuario $usuario, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Usuario $usuario, EntityManagerInterface $entityManager, UserPasswordHasherInterface $userPasswordHasher): Response
     {
         // SEGURIDAD: Si el ID de la URL no coincide con el usuario logueado, lanzamos 403
         if ($usuario !== $this->getUser()) {
@@ -63,10 +65,39 @@ final class UsuarioController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+            $currentPassword = $form->get('current_password')->getData();
+            $newPassword = $form->get('plainPassword')->getData();// Solo si se ha intentado cambiar la contraseña, validamos los campos relacionados
 
-            // Redirigimos a su propio perfil tras editar
-            return $this->redirectToRoute('app_usuario_show', ['id' => $usuario->getId()], Response::HTTP_SEE_OTHER);
+            if ($newPassword || $currentPassword) {
+                if (!$currentPassword) {
+                    $form->get('current_password')->addError(new FormError('Debes introducir tu contraseña actual para cambiarla.'));
+                } elseif (!$newPassword) {
+                    $form->get('plainPassword')->first()->addError(new FormError('Debes introducir la nueva contraseña.'));
+                } elseif (!$userPasswordHasher->isPasswordValid($usuario, $currentPassword)) {
+                    // Control rápido por si hubo "Doble Submit": evitamos el error falso si la contraseña ya fue cambiada
+                    if (!$userPasswordHasher->isPasswordValid($usuario, $newPassword)) {
+                        $form->get('current_password')->addError(new FormError('La contraseña actual no es correcta.'));
+                    } else {
+                        $this->addFlash('success', 'Contraseña actualizada correctamente.');
+                    }
+                } else {
+                    $usuario->setPassword(
+                        $userPasswordHasher->hashPassword(
+                            $usuario,
+                            $newPassword
+                        )
+                    );
+                    $this->addFlash('success', 'Contraseña actualizada correctamente.');
+                }
+            }
+
+            if ($form->getErrors(true)->count() === 0) {
+                $entityManager->flush();
+
+                $this->addFlash('success', 'Perfil actualizado correctamente.');
+                // Redirigimos a su propio perfil tras editar
+                return $this->redirectToRoute('app_usuario_show', ['id' => $usuario->getId()], Response::HTTP_SEE_OTHER);
+            }
         }
 
         return $this->render('usuario/edit.html.twig', [

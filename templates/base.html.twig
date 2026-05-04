@@ -124,6 +124,16 @@
     {% endblock %}
 
     <main class="flex-1">
+    {#mostras mensajes flash#}
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="max-w-[1280px] mx-auto px-6 mt-4">
+                    <div class="p-4 mb-4 text-sm {% if label == 'success' %}text-green-800 bg-green-50 border border-green-200{% elseif label == 'error' %}text-red-800 bg-red-50 border border-red-200{% else %}text-blue-800 bg-blue-50 border border-blue-200{% endif %} rounded-lg" role="alert">
+                        {{ message }}
+                    </div>
+                </div>
+            {% endfor %}
+        {% endfor %}
         {% block body %}{% endblock %}
     </main>
 
