@@ -10,10 +10,34 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 #[Route('/imagen')]
 final class ImagenController extends AbstractController
 {
+    #[Route('/perfil/{filename}', name: 'app_imagen_perfil', methods: ['GET'])]
+    public function perfil(string $filename, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');// Solo usuarios autenticados pueden acceder a las imágenes de perfil
+
+        // Protegemos contra ataques de path traversal, asegurándonos que el filename no contenga rutas relativas o caracteres sospechosos
+        if (str_contains($filename, '/') || str_contains($filename, '\\') || str_contains($filename, '..')) {
+            throw $this->createNotFoundException('Imagen no válida.');
+        }
+        // Construimos la ruta completa al archivo de imagen
+        $filepath = $this->getParameter('kernel.project_dir') . '/storage/profiles/' . $filename;
+        if (!file_exists($filepath)) {
+            throw $this->createNotFoundException('Imagen no encontrada.');
+        }
+        
+        // Liberar la sesión antes de servir la imagen para evitar bloqueos de sesión (Deadlock)
+        if ($request->hasSession()) {
+            $request->getSession()->save();
+        }
+
+        return new BinaryFileResponse($filepath);
+    }
+
     #[Route(name: 'app_imagen_index', methods: ['GET'])]
     public function index(ImagenRepository $imagenRepository): Response
     {

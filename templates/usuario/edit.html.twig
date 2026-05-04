@@ -23,14 +23,14 @@
 
         <!-- Form Container -->
         <div class="bg-white p-8 md:p-10 rounded-xl shadow-sm border border-gray-200">
-            <!-- Avatar Section (Visual Only) -->
+            <!-- Avatar Section -->
             <div class="flex flex-col items-center mb-10">
-                <div class="relative group cursor-pointer" onclick="alert('La subida de fotos estará disponible muy pronto.')">
-                    <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-surface ring-2 ring-primary-container shadow-md transition-all group-hover:opacity-90">
+                <div class="relative group cursor-pointer" onclick="document.getElementById('usuario_foto_perfil').click()">
+                    <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-white ring-2 ring-blue-500 shadow-md transition-all group-hover:opacity-90">
                         {% if usuario.urlFotoPerfil %}
-                            <img src="{{ usuario.urlFotoPerfil }}" alt="Avatar de {{ usuario.nickname }}" class="w-full h-full object-cover">
+                            <img id="avatar_preview" src="{{ usuario.urlFotoPerfil }}" alt="Avatar de {{ usuario.nickname }}" class="w-full h-full object-cover">
                         {% else %}
-                            <img src="https://ui-avatars.com/api/?name={{ usuario.nickname|url_encode }}&background=0D8ABC&color=fff&size=256" alt="Avatar por defecto" class="w-full h-full object-cover">
+                            <img id="avatar_preview" src="https://ui-avatars.com/api/?name={{ usuario.nickname|url_encode }}&background=0D8ABC&color=fff&size=256" alt="Avatar por defecto" class="w-full h-full object-cover">
                         {% endif %}
                     </div>
                     <button type="button" class="absolute bottom-1 right-1 bg-blue-600 text-white p-2 rounded-full shadow-lg hover:bg-blue-700 transition-colors active:scale-90 flex items-center justify-center">
@@ -42,6 +42,10 @@
 
             <!-- Form Fields -->
             {{ form_start(form, {'attr': {'class': 'space-y-8', 'id': 'edit_user_form', 'onsubmit': 'if(this.dataset.submitted) return false; this.dataset.submitted=true; this.querySelector("button[type=submit]").innerText="Guardando...";'}}) }}
+                
+                <div class="hidden">
+                    {{ form_widget(form.foto_perfil, {'id': 'usuario_foto_perfil', 'attr': {'onchange': 'document.getElementById("avatar_preview").src = window.URL.createObjectURL(this.files[0])'}}) }}
+                </div>
                 
                 <!-- Nickname Field -->
                 <div>

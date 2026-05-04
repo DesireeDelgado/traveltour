@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Form\FormError;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 #[Route('/usuario')]
 final class UsuarioController extends AbstractController
@@ -54,7 +56,7 @@ final class UsuarioController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_usuario_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Usuario $usuario, EntityManagerInterface $entityManager, UserPasswordHasherInterface $userPasswordHasher): Response
+    public function edit(Request $request, Usuario $usuario, EntityManagerInterface $entityManager, UserPasswordHasherInterface $userPasswordHasher, SluggerInterface $slugger): Response
     {
         // SEGURIDAD: Si el ID de la URL no coincide con el usuario logueado, lanzamos 403
         if ($usuario !== $this->getUser()) {
@@ -90,8 +92,28 @@ final class UsuarioController extends AbstractController
                     $this->addFlash('success', 'Contraseña actualizada correctamente.');
                 }
             }
-
+            // Si no hay errores en el formulario, procedemos a guardar los cambios (incluyendo la foto de perfil)
             if ($form->getErrors(true)->count() === 0) {
+                
+                $fotoFile = $form->get('foto_perfil')->getData();
+                if ($fotoFile) {
+                    $originalFilename = pathinfo($fotoFile->getClientOriginalName(), PATHINFO_FILENAME);
+                    $safeFilename = $slugger->slug($originalFilename);
+                    $newFilename = $safeFilename.'-'.uniqid().'.'.$fotoFile->getClientOriginalExtension();
+
+                    try {
+                        $fotoFile->move(
+                            $this->getParameter('kernel.project_dir') . '/storage/profiles',
+                            $newFilename
+                        );
+                        $this->addFlash('success', 'Foto de perfil actualizada correctamente.');
+                        // Guardamos la ruta del controlador para que resuelva la imagen
+                        $usuario->setUrlFotoPerfil('/imagen/perfil/' . $newFilename);
+                    } catch (FileException $e) {
+                        $this->addFlash('error', 'Error al subir la foto de perfil.');
+                    }
+                }
+                
                 $entityManager->flush();
 
                 $this->addFlash('success', 'Perfil actualizado correctamente.');

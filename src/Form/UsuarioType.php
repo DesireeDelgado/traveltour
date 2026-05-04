@@ -8,9 +8,11 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\Image;
 
 class UsuarioType extends AbstractType
 {
@@ -24,6 +26,22 @@ class UsuarioType extends AbstractType
             ->add('biografia', null, [
                 'label' => 'Biografía',
                 'attr' => ['placeholder' => 'Cuéntanos sobre tu estilo de viaje...', 'rows' => 5, 'class' => 'w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all font-body-md text-gray-800 bg-gray-50 resize-none']
+            ])
+            ->add('foto_perfil', FileType::class, [
+                'label' => 'Foto de Perfil',
+                'mapped' => false,
+                'required' => false,
+                'constraints' => [
+                    new Image([
+                        'maxSize' => '5M',
+                        'mimeTypes' => [
+                            'image/jpeg',
+                            'image/png',
+                            'image/webp',
+                        ],
+                        'mimeTypesMessage' => 'Por favor sube una imagen válida (JPEG, PNG, WEBP)',
+                    ])
+                ],
             ])
             ->add('current_password', PasswordType::class, [
                 'mapped' => false,

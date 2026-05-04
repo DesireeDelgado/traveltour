@@ -25,6 +25,9 @@
 /public/build/
 ###< pentatrion/vite-bundle ###
 
+# User uploaded files (profile pictures, etc.)
+/storage/
+
 .env
 .env.test
 .env.dev
