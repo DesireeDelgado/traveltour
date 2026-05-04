@@ -136,9 +136,9 @@
                 Zona de Peligro
             </h2>
             <p class="text-red-600 mb-6">
-                Una vez que elimines tu cuenta, no hay vuelta atrás. Asegúrate de estar completamente seguro de guardar tus recuerdos antes de proceder.
+                Una vez que elimines tu cuenta, dispones de 30 días para recuperarla (lo podrás hacer logueándote de nuevo en la aplicación). Después, no habrá vuelta atrás. Asegúrate de estar completamente seguro de guardar tus recuerdos antes de proceder.
             </p>
-            <form method="post" action="{{ path('app_usuario_delete', {'id': usuario.id}) }}" onsubmit="return confirm('¿Estás SEGURO de que quieres borrar tu cuenta? Esta acción no se puede deshacer.');">
+            <form method="post" action="{{ path('app_usuario_delete', {'id': usuario.id}) }}" onsubmit="return confirm('¿Estás seguro de que quieres programar el borrado de tu cuenta? Dispondrás de 30 días para recuperarla.');">
                 <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ usuario.id) }}">
                 <button type="submit" class="bg-red-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-red-700 active:scale-95 transition-all shadow-sm flex items-center justify-center gap-2">
                     {{ ux_icon('lucide:trash-2', {'class': 'w-5 h-5'}) }}

@@ -139,9 +139,12 @@ final class UsuarioController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$usuario->getId(), $request->getPayload()->getString('_token'))) {
             // Antes de borrar, hay que cerrar la sesión del usuario para evitar errores
             $this->container->get('security.token_storage')->setToken(null);
-            
-            $entityManager->remove($usuario);
+            $request->getSession()->invalidate();
+
+            // SOFT DELETE
+            $usuario->setDeletedAt(new \DateTimeImmutable());
             $entityManager->flush();
+            $this->addFlash('success', 'Tu cuenta ha sido programada para su borrado en 30 días.');
         }
 
         // Al borrar la cuenta, lo mandamos al inicio (página pública)

@@ -73,6 +73,9 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Favoritos::class, mappedBy: 'id_usuario', orphanRemoval: true)]
     private Collection $favoritos;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $deletedAt = null;
+
     public function __construct()
     {
         $this->viajes = new ArrayCollection();
@@ -289,6 +292,18 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->id . "" . $this->email;
 
 
+    }
+
+    public function getDeletedAt(): ?\DateTimeImmutable
+    {
+        return $this->deletedAt;
+    }
+
+    public function setDeletedAt(?\DateTimeImmutable $deletedAt): static
+    {
+        $this->deletedAt = $deletedAt;
+
+        return $this;
     }
 
 
