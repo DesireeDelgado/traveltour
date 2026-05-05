@@ -18,25 +18,50 @@ final class ViajeController extends AbstractController
 
 
     #[Route(name: 'app_viaje_index', methods: ['GET'])]
-public function index(ViajeRepository $viajeRepository, FavoritosRepository $favRepo): Response
-{
-    $viajes = $viajeRepository->findAll();
-    $user = $this->getUser();
-    
-    // Creamos un array con los IDs de los viajes que el usuario tiene en favoritos
-    $idsFavoritos = [];
-    if ($user) {
-        $favoritos = $favRepo->findBy(['id_usuario' => $user]);
-        foreach ($favoritos as $f) {
-            $idsFavoritos[] = $f->getIdViaje()->getId();
-        }
-    }
+    public function index(Request $request, ViajeRepository $viajeRepository, FavoritosRepository $favRepo): Response
+    {
+        $presupuesto = $request->query->get('presupuesto');
+        $dias = $request->query->get('dias');
+        $lugar = $request->query->get('lugar');
 
-    return $this->render('viaje/index.html.twig', [// Pasamos tanto los viajes como la lista de IDs de favoritos
-        'viajes' => $viajes,
-        'idsFavoritos' => $idsFavoritos, // Pasamos la lista de IDs
-    ]);
-}
+        if ($presupuesto !== null && $presupuesto !== '') {
+            $presupuesto = (float) $presupuesto;
+        } else {
+            $presupuesto = null;
+        }
+
+        if ($dias !== null && $dias !== '') {
+            $dias = (int) $dias;
+        } else {
+            $dias = null;
+        }
+
+        // Filtramos viajes
+        $viajes = $viajeRepository->findByFilters($presupuesto, $dias, $lugar);
+        $destinos = $viajeRepository->findAllDestinos();
+
+        $user = $this->getUser();
+        
+        // Creamos un array con los IDs de los viajes que el usuario tiene en favoritos
+        $idsFavoritos = [];
+        if ($user) {
+            $favoritos = $favRepo->findBy(['id_usuario' => $user]);
+            foreach ($favoritos as $f) {
+                $idsFavoritos[] = $f->getIdViaje()->getId();
+            }
+        }
+
+        return $this->render('viaje/index.html.twig', [
+            'viajes' => $viajes,
+            'idsFavoritos' => $idsFavoritos,
+            'destinos_json' => json_encode($destinos),
+            'filters' => [
+                'presupuesto' => $presupuesto,
+                'dias' => $dias,
+                'lugar' => $lugar
+            ]
+        ]);
+    }
 
     #[Route('/new', name: 'app_viaje_new', methods: ['GET', 'POST'])]
 public function new(Request $request, EntityManagerInterface $entityManager, ViajeRepository $viajeRepository): Response

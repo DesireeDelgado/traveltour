@@ -4,13 +4,85 @@
 
 {% block body %}
 <main class="max-w-6xl mx-auto px-6 py-12">
-    <div class="flex items-center justify-between mb-10">
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
         <div>
             <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-2 font-display">Explorar Viajes</h1>
             <p class="text-slate-500 text-lg">Descubre las mejores aventuras de la comunidad.</p>
         </div>
     </div>
 
+    <!-- Buscador y Filtros -->
+    <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 mb-10">
+        <form method="get" action="{{ path('app_viaje_index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+            
+            <!-- Buscador de lugar con Autocompletado manual -->
+            <div class="relative">
+                <label for="lugar" class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Lugar o destino</label>
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                        {{ ux_icon('lucide:map-pin', {'class': 'w-5 h-5'}) }}
+                    </span>
+                    <input type="text" id="lugar" name="lugar" value="{{ filters.lugar|default('') }}" autocomplete="off"
+                           class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all text-slate-800 bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white" 
+                           placeholder="Ej. Madrid, París...">
+                </div>
+                <!-- Dropdown Autocomplete -->
+                <div id="autocomplete-list" class="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg empty:hidden hidden dark:bg-slate-800 dark:border-slate-700 overflow-hidden max-h-60 overflow-y-auto"></div>
+            </div>
+
+            <!-- Filtro Presupuesto con Rango -->
+            <div>
+                <label for="presupuesto" class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 flex justify-between">
+                    <span>Presupuesto Max.</span>
+                    <span class="text-blue-600" id="presupuesto-output">{{ filters.presupuesto ? filters.presupuesto ~ ' €' : 'Cualquiera' }}</span>
+                </label>
+                <div class="py-2">
+                    <input type="range" id="presupuesto" name="presupuesto" min="0" max="2500" step="50" 
+                           value="{{ filters.presupuesto|default('2500') }}"
+                           class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700 accent-blue-600"
+                           oninput="document.getElementById('presupuesto-output').innerText = this.value >= 2500 ? 'Cualquiera' : this.value + ' €'; if(this.value>=2500){this.name='';}else{this.name='presupuesto';}">
+                </div>
+            </div>
+
+            <!-- Filtro Días -->
+            <div class="md:justify-self-center flex flex-col items-center">
+                <label for="dias" class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 text-center">Duración (Días)</label>
+                <div class="flex items-stretch h-[46px] w-[130px] rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 overflow-hidden focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all shadow-sm">
+                    <button type="button" onclick="document.getElementById('dias').stepDown()" class="px-3 md:px-4 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800/50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700 transition-colors flex items-center justify-center outline-none">
+                        {{ ux_icon('lucide:minus', {'class': 'w-4 h-4'}) }}
+                    </button>
+                    <input type="number" id="dias" name="dias" min="1" max="90" value="{{ filters.dias|default('') }}"
+                           class="w-full text-center focus:outline-none text-slate-800 bg-transparent dark:text-white font-bold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
+                           placeholder="0">
+                    <button type="button" onclick="document.getElementById('dias').stepUp()" class="px-3 md:px-4 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800/50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 border-l border-slate-200 dark:border-slate-700 transition-colors flex items-center justify-center outline-none">
+                        {{ ux_icon('lucide:plus', {'class': 'w-4 h-4'}) }}
+                    </button>
+                </div>
+            </div>
+
+            <!-- Botones acción -->
+            <div class="flex gap-2">
+                {% if filters.presupuesto or filters.dias or filters.lugar %}
+                    <a href="{{ path('app_viaje_index') }}" class="w-full text-center bg-slate-100 text-slate-600 px-4 py-3 rounded-xl font-bold hover:bg-slate-200 transition-colors shadow-sm dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">Limpiar</a>
+                {% endif %}
+                <button type="submit" class="w-full bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 active:scale-95 transition-all shadow-sm flex items-center justify-center gap-2">
+                    {{ ux_icon('lucide:search', {'class': 'w-5 h-5'}) }} Buscar
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Resultados -->
+    {% if viajes|length == 0 %}
+        <div class="text-center py-20 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800">
+            <span class="inline-block p-4 rounded-full bg-blue-50 text-blue-500 mb-4 dark:bg-blue-900/30">
+                {{ ux_icon('lucide:map', {'class': 'w-10 h-10'}) }}
+            </span>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">No se encontraron viajes</h3>
+            <p class="text-slate-500 max-w-md mx-auto">No hemos encontrado nada que coincida con tus filtros. Prueba a buscar otro destino, con otra duración u otro presupuesto.</p>
+            <a href="{{ path('app_viaje_index') }}" class="mt-6 inline-block text-blue-600 font-bold hover:underline">Ver todos los viajes</a>
+        </div>
+    {% else %}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {% for viaje in viajes %}
             {# LÓGICA DE PERSISTENCIA: Comprobación en el servidor #}
@@ -87,9 +159,66 @@
             </div>
         {% endfor %}
     </div>
+    {% endif %}
 </main>
 
 <script>
+// --- LÓGICA AUTOCOMPLETE ---
+document.addEventListener('DOMContentLoaded', function() {
+    const inputLugar = document.getElementById('lugar');
+    const autocompleteList = document.getElementById('autocomplete-list');
+    
+    // Convertimos los destinos inyectados desde el controller a un set único y limpio
+    // para autocompletado
+    let destinos = [];
+    try {
+        destinos = JSON.parse('{{ destinos_json|raw }}');
+    } catch(e) {}
+
+    inputLugar.addEventListener('input', function() {
+        let val = this.value;
+        autocompleteList.innerHTML = '';
+        
+        if (!val) {
+            autocompleteList.classList.add('hidden');
+            return;
+        }
+
+        let hasResults = false;
+        
+        destinos.forEach(function(destino) {
+            if (destino && destino.substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                hasResults = true;
+                const div = document.createElement('div');
+                div.className = "px-4 py-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium transition-colors border-b border-slate-100 dark:border-slate-700 last:border-0";
+                div.innerHTML = "<strong>" + destino.substr(0, val.length) + "</strong>" + destino.substr(val.length);
+                
+                div.addEventListener('click', function() {
+                    inputLugar.value = destino;
+                    autocompleteList.innerHTML = '';
+                    autocompleteList.classList.add('hidden');
+                });
+                
+                autocompleteList.appendChild(div);
+            }
+        });
+
+        if (hasResults) {
+            autocompleteList.classList.remove('hidden');
+        } else {
+            autocompleteList.classList.add('hidden');
+        }
+    });
+
+    // Cerrar autocomplete al pinchar fuera
+    document.addEventListener('click', function(e) {
+        if (e.target !== inputLugar) {
+            autocompleteList.innerHTML = '';
+            autocompleteList.classList.add('hidden');
+        }
+    });
+});
+
 document.addEventListener('click', function(e) {
     const btn = e.target.closest('.btn-favorito-toggle');
     if (!btn) return;

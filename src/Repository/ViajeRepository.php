@@ -42,13 +42,48 @@ class ViajeRepository extends ServiceEntityRepository
     //    }
     //Ordenar por los que mas favoritos tienen
     public function findTopPopulares(int $limit = 3): array
-{
-    return $this->createQueryBuilder('v')
-        ->leftJoin('v.favoritos', 'f')
-        ->groupBy('v.id')
-        ->orderBy('COUNT(f.id)', 'DESC')
-        ->setMaxResults($limit)
-        ->getQuery()
-        ->getResult();
-}
+    {
+        return $this->createQueryBuilder('v')
+            ->leftJoin('v.favoritos', 'f')
+            ->groupBy('v.id')
+            ->orderBy('COUNT(f.id)', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByFilters(?float $presupuesto, ?int $dias, ?string $lugar): array
+    {
+        $qb = $this->createQueryBuilder('v');
+
+        if ($presupuesto !== null) {
+            $qb->andWhere('v.presupuesto <= :presupuesto')
+               ->setParameter('presupuesto', $presupuesto);
+        }
+
+        if ($dias !== null) {
+            $qb->andWhere('v.duracion = :dias')
+               ->setParameter('dias', $dias);
+        }
+
+        if ($lugar !== null && $lugar !== '') {
+            // Buscamos si coincide con el destino o el nombre
+            $qb->andWhere('LOWER(v.destino) LIKE LOWER(:lugar) OR LOWER(v.titulo) LIKE LOWER(:lugar)')
+               ->setParameter('lugar', '%' . $lugar . '%');
+        }
+
+        return $qb->orderBy('v.id', 'DESC')->getQuery()->getResult();
+    }
+    // Método para obtener todos los destinos únicos de los viajes
+    public function findAllDestinos(): array
+    {
+        $resultados = $this->createQueryBuilder('v')
+            ->select('DISTINCT v.destino')
+            ->where('v.destino IS NOT NULL')
+            ->orderBy('v.destino', 'ASC')
+            ->getQuery()
+            ->getScalarResult();
+        
+        return array_column($resultados, 'destino');
+    }
 }
