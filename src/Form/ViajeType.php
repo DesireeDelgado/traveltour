@@ -21,6 +21,29 @@ class ViajeType extends AbstractType
             ->add('contenido')
             ->add('alojamiento')
             ->add('gastronomia')
+            ->add('imagenes', \Symfony\Component\Form\Extension\Core\Type\FileType::class, [
+                'mapped' => false,
+                'multiple' => true,
+                'required' => true,
+                'label' => false,
+                'constraints' => [
+                    new \Symfony\Component\Validator\Constraints\Count([
+                        'min' => 1,
+                        'max' => 5,
+                        'minMessage' => 'Debes subir al menos una imagen (será la portada).',
+                        'maxMessage' => 'No puedes subir más de 5 imágenes en total.'
+                    ]),
+                    new \Symfony\Component\Validator\Constraints\All([
+                        'constraints' => [
+                            new \Symfony\Component\Validator\Constraints\Image([
+                                'maxSize' => '5M',
+                                'mimeTypes' => ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'],
+                                'mimeTypesMessage' => 'Por favor, sube imágenes válidas (JPG, PNG, WEBP)',
+                            ])
+                        ]
+                    ])
+                ],
+            ])
         ;
     }
 
@@ -28,6 +51,7 @@ class ViajeType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Viaje::class,
+            'csrf_protection' => false, // <-- AÑADE ESTO
         ]);
     }
 }

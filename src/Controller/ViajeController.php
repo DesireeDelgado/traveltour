@@ -64,13 +64,16 @@ final class ViajeController extends AbstractController
     }
 
     #[Route('/new', name: 'app_viaje_new', methods: ['GET', 'POST'])]
-public function new(Request $request, EntityManagerInterface $entityManager, ViajeRepository $viajeRepository): Response
+public function new(Request $request, EntityManagerInterface $entityManager, ViajeRepository $viajeRepository, \Symfony\Component\String\Slugger\SluggerInterface $slugger): Response
 {
     $viaje = new Viaje();
     $form = $this->createForm(ViajeType::class, $viaje);
+
+
     $form->handleRequest($request);
 
     if ($form->isSubmitted() && $form->isValid()) {
+        
         // --- BLOQUE DE SEGURIDAD ANTI-DUPLICADOS ---
         $existe = $viajeRepository->findOneBy([
             'titulo' => $viaje->getTitulo(),
@@ -84,16 +87,53 @@ public function new(Request $request, EntityManagerInterface $entityManager, Via
         // --- FIN BLOQUE ---
 
         $viaje->setIdUsuario($this->getUser());
+
+        // Implementa un cierre de sesión manual antes del procesamiento de imágenes para evitar bloqueos
+        if ($request->hasSession()) {
+            $request->getSession()->save();
+        }
+
+        // --- PROCESAMIENTO DE IMÁGENES ---
+        $archivosImagenes = $form->get('imagenes')->getData();
+        if ($archivosImagenes) {
+            foreach ($archivosImagenes as $archivo) {
+                $nombreOriginal = pathinfo($archivo->getClientOriginalName(), PATHINFO_FILENAME);
+                $nombreSeguro = $slugger->slug($nombreOriginal);
+                $nuevoNombre = $nombreSeguro.'-'.uniqid().'.'.$archivo->guessExtension();
+
+                try {
+                    // Mover al storage fuera de public usando el parámetro de services.yaml
+                    $archivo->move(
+                        $this->getParameter('viajes_directory'),
+                        $nuevoNombre
+                    );
+        
+                } catch (\Exception $e) {
+                    $this->addFlash('error', 'Error subiendo imagen: ' . $e->getMessage());
+                    continue; // Saltar a la siguiente si esta falla
+                }
+
+                $imagen = new \App\Entity\Imagen();
+                $imagen->setUrlPath($nuevoNombre); // Guardamos solo el nombre para luego pasarlo a la ruta
+                $viaje->addImagene($imagen);
+                
+                // IMPORTANTE: Persistir la entidad Imagen explícitamente ya que no hay cascade={"persist"}
+                $entityManager->persist($imagen);
+            }
+        }
+        // ---------------------------------
+
         $entityManager->persist($viaje);
         $entityManager->flush();
 
+        // Redirigir al index de viajes, como has solicitado alternativamente
         return $this->redirectToRoute('app_viaje_index', [], Response::HTTP_SEE_OTHER);
     }
 
     return $this->render('viaje/new.html.twig', [
         'viaje' => $viaje,
         'form' => $form,
-    ]);
+    ], new Response(null, $form->isSubmitted() && !$form->isValid() ? 422 : 200));
 }
    /*
     #[Route('/{id}', name: 'app_viaje_show', methods: ['GET'])]
@@ -163,7 +203,7 @@ public function show(Viaje $viaje, FavoritosRepository $favRepo): Response
         return $this->render('viaje/edit.html.twig', [
             'viaje' => $viaje,
             'form' => $form,
-        ]);
+        ], new Response(null, $form->isSubmitted() && !$form->isValid() ? 422 : 200));
     }
 
    #[Route('/{id}', name: 'app_viaje_delete', methods: ['POST'])]

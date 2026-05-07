@@ -38,6 +38,28 @@ final class ImagenController extends AbstractController
         return new BinaryFileResponse($filepath);
     }
 
+    #[Route('/viaje/{filename}', name: 'app_imagen_viaje', methods: ['GET'])]
+    public function viaje(string $filename, Request $request): Response
+    {
+        // Protegemos contra ataques de path traversal
+        if (str_contains($filename, '/') || str_contains($filename, '\\') || str_contains($filename, '..')) {
+            throw $this->createNotFoundException('Imagen no válida.');
+        }
+        
+        $filepath = $this->getParameter('kernel.project_dir') . '/storage/viajes/' . $filename;
+        
+        if (!file_exists($filepath)) {
+            throw $this->createNotFoundException('Imagen no encontrada.');
+        }
+        
+        // Liberar la sesión antes de servir la imagen para evitar bloqueos de sesión (Deadlock)
+        if ($request->hasSession()) {
+            $request->getSession()->save();
+        }
+
+        return new BinaryFileResponse($filepath);
+    }
+
     #[Route(name: 'app_imagen_index', methods: ['GET'])]
     public function index(ImagenRepository $imagenRepository): Response
     {
