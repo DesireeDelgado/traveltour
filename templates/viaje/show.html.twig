@@ -65,7 +65,9 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                                 {% for imagen in viaje.imagenes %}
                                     <div class="aspect-square rounded-xl overflow-hidden shadow-sm border border-gray-100 bg-gray-50">
-                                        <img src="{{ path('app_imagen_viaje', {'filename': imagen.urlPath}) }}" alt="Foto de {{ viaje.titulo }}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer">
+                                        <a href="{{ path('app_imagen_viaje', {'filename': imagen.urlPath}) }}" class="galeria-item block w-full h-full">
+                                            <img src="{{ path('app_imagen_viaje', {'filename': imagen.urlPath}) }}" alt="Foto de {{ viaje.titulo }}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer">
+                                        </a>
                                     </div>
                                 {% endfor %}
                             </div>
@@ -173,6 +175,49 @@
                 }
             })
             .catch(err => console.error('Error:', err));
+        });
+    </script>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Fondo desenfocado y oscuro */
+        .lum-backdrop {
+            @apply bg-black/50 backdrop-blur-lg !important;
+        }
+
+        /* Forzar que las flechas aparezcan y sean blancas */
+        .lum-next-button, .lum-previous-button {
+            @apply text-white scale-[2] opacity-80 hover:opacity-100 transition-all !important;
+            display: block !important;
+        }
+
+        /* Ajustar posición de las flechas para que no se peguen al borde */
+        .lum-previous-button { left: 40px !important; }
+        .lum-next-button { right: 40px !important; }
+
+        /* Hacer que la imagen tenga bordes redondeados y sombra */
+        .lum-lightbox-image {
+            @apply rounded-2xl shadow-2xl border-4 border-white/10;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const galleryElements = document.querySelectorAll('.galeria-item');
+            if (galleryElements.length > 0) {
+                // Configuramos explícitamente LuminousGallery estableciendo opciones de Luminous en el tercer argumento
+                new LuminousGallery(galleryElements, {
+                    arrowNavigation: true
+                }, {
+                    closeOnScroll: false,
+                    closeWithEscape: true
+                });
+            }
         });
     </script>
 {% endblock %}
