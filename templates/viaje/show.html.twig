@@ -5,7 +5,7 @@
 {% block body %}
     <main class="min-h-screen bg-slate-100 pb-12">
         {# Main Image Header #}
-        {% set header_bg = viaje.imagenes|length > 0 ? asset('storage/viajes/' ~ viaje.imagenes[0].urlPath) : 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1' %}
+        {% set header_bg = viaje.imagenes|length > 0 ? path('app_imagen_viaje', {'filename': viaje.imagenes[0].urlPath}) : 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1' %}
         <div class="relative h-[60vh] sm:h-[70vh] w-full bg-cover bg-center" style="background-image: url('{{ header_bg }}');">
             <div class="absolute inset-0 bg-black/40"></div>
             <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
@@ -52,6 +52,23 @@
                                 Gastronomía
                             </h2>
                             <div class="prose prose-lg text-gray-600 max-w-none">{{ viaje.gastronomia|nl2br }}</div>
+                        </section>
+                        {% endif %}
+
+                        {% if viaje.imagenes|length > 0 %}
+                        <hr class="border-gray-100 my-8">
+                        <section class="mb-10">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                                {{ ux_icon('lucide:image', {'class': 'w-6 h-6 mr-3 text-purple-600'}) }}
+                                Galería de fotos
+                            </h2>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                                {% for imagen in viaje.imagenes %}
+                                    <div class="aspect-square rounded-xl overflow-hidden shadow-sm border border-gray-100 bg-gray-50">
+                                        <img src="{{ path('app_imagen_viaje', {'filename': imagen.urlPath}) }}" alt="Foto de {{ viaje.titulo }}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer">
+                                    </div>
+                                {% endfor %}
+                            </div>
                         </section>
                         {% endif %}
                     </div>
