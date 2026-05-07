@@ -96,11 +96,17 @@
             {% endif %}
 
             <div class="group flex flex-col overflow-hidden rounded-xl bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-md dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
-                <div class="relative aspect-[16/10] overflow-hidden">
+                <div class="relative aspect-[16/10] overflow-hidden bg-slate-200">
                     <a href="{{ path('app_viaje_show', {'id': viaje.id}) }}" class="block w-full h-full">
-                        <img class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" 
-                             alt="{{ viaje.titulo }}" 
-                             src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_fabT81jRizmamsEUioeEM9bgPdIzCRrmoRJjnbu3a-aTHpxvjZ8dUN9nMGrjzAZq_OOlRnd6oTigO7ZUJK09A7wFcZRVnOQMlQd83Y6SIUTyCQQKWMpWrVgXuKYVN0oWTamrcDkY-9bn4kKzmclEx8pQPX1G85W5EIeBR6SppAVyh6UiB43b5CZ2JKE_gs3XLiC8MttQSPDnt5YwXPGN5PISN3M5m9jy4UDazk9fi-J9SUX1tT4kYr7Eg2m_btgfAGxOVThSAtYv"/>
+                        {% if viaje.imagenes|length > 0 %}
+                            <img class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                                 alt="{{ viaje.titulo }}" 
+                                 src="{{ path('app_imagen_viaje', {'filename': viaje.imagenes|first.urlPath}) }}"/>
+                        {% else %}
+                            <img class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                                 alt="{{ viaje.titulo }}" 
+                                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_fabT81jRizmamsEUioeEM9bgPdIzCRrmoRJjnbu3a-aTHpxvjZ8dUN9nMGrjzAZq_OOlRnd6oTigO7ZUJK09A7wFcZRVnOQMlQd83Y6SIUTyCQQKWMpWrVgXuKYVN0oWTamrcDkY-9bn4kKzmclEx8pQPX1G85W5EIeBR6SppAVyh6UiB43b5CZ2JKE_gs3XLiC8MttQSPDnt5YwXPGN5PISN3M5m9jy4UDazk9fi-J9SUX1tT4kYr7Eg2m_btgfAGxOVThSAtYv"/>
+                        {% endif %}
                     </a>
                     
                     {# BOTÓN DE FAVORITO #}

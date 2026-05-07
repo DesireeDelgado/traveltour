@@ -5,7 +5,7 @@
 {% block body %}
     <main class="min-h-screen bg-slate-100 pb-12">
         {# Main Image Header #}
-        {% set header_bg = viaje.imagenes|length > 0 ? asset('uploads/images/' ~ viaje.imagenes[0].ruta) : 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1' %}
+        {% set header_bg = viaje.imagenes|length > 0 ? asset('storage/viajes/' ~ viaje.imagenes[0].urlPath) : 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1' %}
         <div class="relative h-[60vh] sm:h-[70vh] w-full bg-cover bg-center" style="background-image: url('{{ header_bg }}');">
             <div class="absolute inset-0 bg-black/40"></div>
             <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-4">

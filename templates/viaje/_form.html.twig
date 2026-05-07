@@ -105,9 +105,9 @@
         
         <!-- Submit Action -->
         <div class="md:col-span-2 flex justify-center pt-8 pb-12">
-            <button class="group relative px-12 py-5 bg-gradient-to-br from-[#005d90] to-[#0077B6] text-white rounded-full font-bold text-lg shadow-[0_12px_32px_rgba(0,93,144,0.3)] hover:scale-[1.02] active:scale-95 transition-all duration-300" type="submit">
+            <button id="submit-btn" class="group relative px-12 py-5 bg-gradient-to-br from-[#005d90] to-[#0077B6] text-white rounded-full font-bold text-lg shadow-[0_12px_32px_rgba(0,93,144,0.3)] hover:scale-[1.02] active:scale-95 transition-all duration-300" type="submit">
                 <span class="flex items-center gap-3">
-                    {{ button_label|default('Guardar Itinerario') }}
+                    <span id="submit-text">{{ button_label|default('Guardar Itinerario') }}</span>
                     <span class="group-hover:translate-x-1 transition-transform flex items-center">
                         {{ ux_icon('lucide:send', {'class': 'w-5 h-5'}) }}
                     </span>
@@ -116,3 +116,57 @@
         </div>
     {{ form_end(form) }}
 </main>
+
+<script>
+// Comprimir imágenes en el cliente antes de subirlas
+document.addEventListener('DOMContentLoaded', () => {
+    const fileInput = document.querySelector('input[type="file"]');
+    const submitBtn = document.getElementById('submit-btn');
+    const submitText = document.getElementById('submit-text');
+    const originalText = submitText ? submitText.innerText : 'Guardar Itinerario';
+    // Verificar que el elemento existe antes de agregar el event listener
+    if (fileInput) {
+        fileInput.addEventListener('change', async (event) => {
+            const files = event.target.files;
+            if (files.length === 0) return;
+            // Deshabilitar el botón de submit y mostrar texto de carga
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitText.innerText = 'Comprimiendo...';
+            }
+    // Crear un nuevo DataTransfer para almacenar los archivos comprimidos
+            const dataTransfer = new DataTransfer();
+            const options = {
+                maxSizeMB: 0.5,
+                maxWidthOrHeight: 800,
+                useWebWorker: true
+            };
+        // Comprimir cada imagen seleccionada
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                try {
+                    console.log(`Comprimiendo la imagen: ${file.name}`);
+                    const compressedFile = await imageCompression(file, options);
+                    console.log(`Imagen comprimida con éxito: ${file.name}`);
+                    
+                    const newFile = new File([compressedFile], file.name, {
+                        type: compressedFile.type,
+                        lastModified: Date.now()
+                    });
+                    dataTransfer.items.add(newFile);
+                } catch (error) {
+                    console.error('Error comprimiendo la imagen:', error);
+                    dataTransfer.items.add(file);
+                }
+            }
+
+            fileInput.files = dataTransfer.files;
+
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitText.innerText = originalText;
+            }
+        });
+    }
+});
+</script>
