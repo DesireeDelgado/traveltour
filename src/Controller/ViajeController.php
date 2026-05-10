@@ -15,8 +15,6 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/viajes')]
 final class ViajeController extends AbstractController
 {
-
-
     #[Route(name: 'app_viaje_index', methods: ['GET'])]
     public function index(Request $request, ViajeRepository $viajeRepository, FavoritosRepository $favRepo): Response
     {
@@ -125,34 +123,7 @@ final class ViajeController extends AbstractController
             'form' => $form,
         ], new Response(null, $form->isSubmitted() && !$form->isValid() ? 422 : 200));
     }
-   /*
-    #[Route('/{id}', name: 'app_viaje_show', methods: ['GET'])]
-    public function show(Viaje $viaje): Response
-    {
-        return $this->render('viaje/show.html.twig', [
-            'viaje' => $viaje,
-        ]);
-    }
-EL QUE PARECE QUE VA 
-#[Route('/{id}', name: 'app_viaje_show', methods: ['GET'])]
-    public function show(Viaje $viaje): Response
-    {
-        $user = $this->getUser();
-        $isFavorito = false;
 
-        // Comprobamos si el usuario está logueado y si el viaje está en su colección de favoritos
-        if ($user) {
-            // IMPORTANTE: Asegúrate de que el método en tu entidad User se llame getFavoritos()
-            // o cámbialo por el nombre correcto de tu relación ManyToMany
-            $isFavorito = $user->getFavoritos()->contains($viaje);
-        }
-
-        return $this->render('viaje/show.html.twig', [
-            'viaje' => $viaje,
-            'isFavorito' => $isFavorito, // Aquí es donde "nace" la variable que Twig necesita
-        ]);
-    }
-*/
 #[Route('/{id}', name: 'app_viaje_show', methods: ['GET'])]
 public function show(Viaje $viaje, FavoritosRepository $favRepo): Response
 {
@@ -160,7 +131,6 @@ public function show(Viaje $viaje, FavoritosRepository $favRepo): Response
     $isFavorito = false;
 
     if ($user) {
-        // IMPORTANTE: Usa los nombres exactos de tus campos (id_usuario / id_viaje)
         $favorito = $favRepo->findOneBy([
             'id_usuario' => $user,
             'id_viaje' => $viaje
@@ -170,7 +140,7 @@ public function show(Viaje $viaje, FavoritosRepository $favRepo): Response
 
     return $this->render('viaje/show.html.twig', [
         'viaje' => $viaje,
-        'isFavorito' => $isFavorito, // Esta es la variable que el HTML necesita
+        'isFavorito' => $isFavorito, 
     ]);
 }
 
