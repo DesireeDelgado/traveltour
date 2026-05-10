@@ -86,4 +86,25 @@ class ViajeRepository extends ServiceEntityRepository
         
         return array_column($resultados, 'destino');
     }
+
+    /**
+     * Busca destinos cuyo nombre contenga la cadena dada (para autocompletado).
+     *
+     * @return string[]
+     */
+    public function findDestinosByQuery(string $q, int $limit = 6): array
+    {
+        $resultados = $this->createQueryBuilder('v')
+            ->select('DISTINCT v.destino')
+            ->where('v.destino IS NOT NULL')
+            ->andWhere('LOWER(v.destino) LIKE LOWER(:q)')
+            ->setParameter('q', '%' . $q . '%')
+            ->orderBy('v.destino', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getScalarResult();
+
+        return array_column($resultados, 'destino');
+    }
 }
+

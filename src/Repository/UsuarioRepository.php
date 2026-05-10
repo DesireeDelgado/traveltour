@@ -33,28 +33,21 @@ class UsuarioRepository extends ServiceEntityRepository implements PasswordUpgra
         $this->getEntityManager()->flush();
     }
 
-    //    /**
-    //     * @return Usuario[] Returns an array of Usuario objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('u.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Usuario
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /**
+     * Busca usuarios cuyo nickname contenga la cadena dada (para autocompletado).
+     * Excluye usuarios con soft-delete.
+     *
+     * @return Usuario[]
+     */
+    public function findByNicknameQuery(string $q, int $limit = 6): array
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('LOWER(u.nickname) LIKE LOWER(:q)')
+            ->andWhere('u.deletedAt IS NULL')
+            ->setParameter('q', '%' . $q . '%')
+            ->orderBy('u.nickname', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 }

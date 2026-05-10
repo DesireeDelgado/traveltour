@@ -41,14 +41,23 @@
             <div class="flex flex-1 justify-end gap-4 items-center">
                 
                 {# Buscador Escritorio #}
-                <label class="hidden lg:flex flex-col min-w-40 !h-10 max-w-64">
-                    <div class="flex w-full flex-1 items-stretch rounded-lg h-full bg-[#f0f3f4] dark:bg-slate-800">
+                <div class="hidden lg:flex flex-col min-w-40 max-w-64 relative" id="search-wrapper-desktop">
+                    <div class="flex w-full flex-1 items-stretch rounded-lg h-10 bg-[#f0f3f4] dark:bg-slate-800">
                         <div class="text-[#617989] flex items-center justify-center pl-4">
-                            <span class="material-symbols-outlined font-bold text-sm">Buscar</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
                         </div>
-                        <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111518] dark:text-white focus:outline-0 focus:ring-0 border-none bg-transparent h-full px-4 rounded-l-none pl-2 text-base font-normal" value=""/>
+                        <input
+                            id="search-input-desktop"
+                            class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111518] dark:text-white focus:outline-0 focus:ring-0 border-none bg-transparent h-full px-4 rounded-l-none pl-2 text-base font-normal"
+                            placeholder="Buscar destino o usuario..."
+                            autocomplete="off"
+                            value=""
+                        />
                     </div>
-                </label>
+                    <div id="autocomplete-dropdown-desktop" class="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-gray-200 dark:border-slate-700 z-50 hidden overflow-hidden"></div>
+                </div>
 
                 {# Botón Nuevo Viaje Escritorio (Oculto en pantallas menores a lg) #}
                 <a href="{{ path('app_viaje_new') }}" class="hidden lg:flex bg-blue-600 min-w-[84px] items-center justify-center rounded-lg h-10 px-4 text-white text-sm font-bold hover:bg-blue-700 transition-colors shadow-md">
@@ -80,15 +89,22 @@
         {# --- MENÚ DESPLEGABLE MÓVIL --- #}
         <div id="mobile-menu" class="hidden lg:hidden mt-4 pt-4 border-t border-gray-200">
             
-            <div class="px-2 mb-4 w-full">
-                <label class="flex flex-col w-full h-10">
-                    <div class="flex w-full flex-1 items-stretch rounded-lg h-full bg-[#f0f3f4] dark:bg-slate-800">
-                        <div class="text-[#617989] flex items-center justify-center pl-4">
-                            <span class="material-symbols-outlined text-sm font-bold">Buscar</span>
-                        </div>
-                        <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111518] dark:text-white focus:outline-0 focus:ring-0 border-none bg-transparent h-full px-4 rounded-l-none pl-2 text-base font-normal" placeholder="Ej. Madrid..." value=""/>
+            <div class="px-2 mb-4 w-full relative" id="search-wrapper-mobile">
+                <div class="flex w-full flex-1 items-stretch rounded-lg h-10 bg-[#f0f3f4] dark:bg-slate-800">
+                    <div class="text-[#617989] flex items-center justify-center pl-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
                     </div>
-                </label>
+                    <input
+                        id="search-input-mobile"
+                        class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111518] dark:text-white focus:outline-0 focus:ring-0 border-none bg-transparent h-full px-4 rounded-l-none pl-2 text-base font-normal"
+                        placeholder="Buscar destino o usuario..."
+                        autocomplete="off"
+                        value=""
+                    />
+                </div>
+                <div id="autocomplete-dropdown-mobile" class="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-gray-200 dark:border-slate-700 z-50 hidden overflow-hidden"></div>
             </div>
             
             <nav class="flex flex-col gap-4 text-center pb-4">
@@ -116,15 +132,149 @@
     </header>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const btn = document.getElementById('mobile-menu-btn');
+    (function () {
+        const AUTOCOMPLETE_URL = '{{ path('app_search_autocomplete') }}';
+        const VIAJES_URL       = '{{ path('app_viaje_index') }}';
+
+        /* ── Menú móvil ───────────────────────────────────────────── */
+        document.addEventListener('DOMContentLoaded', function () {
+            const btn  = document.getElementById('mobile-menu-btn');
             const menu = document.getElementById('mobile-menu');
             if (btn && menu) {
-                btn.addEventListener('click', function() {
-                    menu.classList.toggle('hidden');
+                btn.addEventListener('click', () => menu.classList.toggle('hidden'));
+            }
+
+            setupAutocomplete('search-input-desktop', 'autocomplete-dropdown-desktop');
+            setupAutocomplete('search-input-mobile',  'autocomplete-dropdown-mobile');
+        });
+
+        /* ── Helpers ──────────────────────────────────────────────── */
+        function escapeHtml(str) {
+            const d = document.createElement('div');
+            d.appendChild(document.createTextNode(str));
+            return d.innerHTML;
+        }
+
+        function updateActive(items, idx) {
+            items.forEach((el, i) => {
+                el.classList.toggle('bg-blue-50', i === idx);
+                el.classList.toggle('dark:bg-slate-700', i === idx);
+            });
+        }
+
+        /* ── Renderizado del dropdown ─────────────────────────────── */
+        function renderDropdown(data, dropdown, inputEl) {
+            if (!data.length) {
+                dropdown.innerHTML = '<div class="px-4 py-3 text-sm text-gray-500 dark:text-slate-400">No se encontraron resultados</div>';
+                dropdown.classList.remove('hidden');
+                return;
+            }
+
+            const destinos = data.filter(s => s.type === 'destino');
+            const usuarios = data.filter(s => s.type === 'usuario');
+            let html = '';
+
+            if (destinos.length) {
+                html += '<p class="px-3 pt-2 pb-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">Destinos</p>';
+                destinos.forEach(s => {
+                    html += `
+                    <a href="${s.url}" class="autocomplete-item flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors">
+                        <span class="flex-shrink-0 w-7 h-7 bg-blue-100 dark:bg-blue-900/40 rounded-full flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </span>
+                        <span class="text-sm text-gray-800 dark:text-white font-medium">${escapeHtml(s.label)}</span>
+                        <span class="ml-auto text-xs text-gray-400">Destino</span>
+                    </a>`;
                 });
             }
-        });
+
+            if (usuarios.length) {
+                if (destinos.length) html += '<div class="border-t border-gray-100 dark:border-slate-700 my-1"></div>';
+                html += '<p class="px-3 pt-1 pb-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">Usuarios</p>';
+                usuarios.forEach(s => {
+                    html += `
+                    <a href="${s.url}" class="autocomplete-item flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors">
+                        <img src="${escapeHtml(s.avatar)}" alt="${escapeHtml(s.label)}" class="flex-shrink-0 w-7 h-7 rounded-full object-cover bg-gray-200" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(s.label)}&background=dbeafe&color=2563eb'">
+                        <span class="text-sm text-gray-800 dark:text-white font-medium">${escapeHtml(s.label)}</span>
+                        <span class="ml-auto text-xs text-gray-400">Usuario</span>
+                    </a>`;
+                });
+            }
+
+            const q = escapeHtml(inputEl.value.trim());
+            const qRaw = encodeURIComponent(inputEl.value.trim());
+            html += `
+            <div class="border-t border-gray-100 dark:border-slate-700 mt-1"></div>
+            <a href="${VIAJES_URL}?lugar=${qRaw}" class="autocomplete-item flex items-center gap-2 px-4 py-2.5 text-sm text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+                Buscar <strong class="mx-1">&ldquo;${q}&rdquo;</strong> en todos los viajes
+            </a>`;
+
+            dropdown.innerHTML = html;
+            dropdown.classList.remove('hidden');
+        }
+
+        /* ── Setup por input ──────────────────────────────────────── */
+        function setupAutocomplete(inputId, dropdownId) {
+            const input    = document.getElementById(inputId);
+            const dropdown = document.getElementById(dropdownId);
+            if (!input || !dropdown) return;
+
+            let timer;
+            let currentIdx = -1;
+            let lastData   = [];
+
+            input.addEventListener('input', function () {
+                clearTimeout(timer);
+                currentIdx = -1;
+                const q = this.value.trim();
+                if (!q) { dropdown.classList.add('hidden'); dropdown.innerHTML = ''; return; }
+
+                timer = setTimeout(() => {
+                    fetch(AUTOCOMPLETE_URL + '?q=' + encodeURIComponent(q))
+                        .then(r => r.json())
+                        .then(data => { lastData = data; renderDropdown(data, dropdown, input); })
+                        .catch(() => {});
+                }, 220);
+            });
+
+            input.addEventListener('keydown', function (e) {
+                const items = dropdown.querySelectorAll('.autocomplete-item');
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    currentIdx = Math.min(currentIdx + 1, items.length - 1);
+                    updateActive(items, currentIdx);
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    currentIdx = Math.max(currentIdx - 1, -1);
+                    updateActive(items, currentIdx);
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (currentIdx >= 0 && lastData[currentIdx]) {
+                        window.location.href = lastData[currentIdx].url;
+                    } else if (this.value.trim()) {
+                        window.location.href = VIAJES_URL + '?lugar=' + encodeURIComponent(this.value.trim());
+                    }
+                } else if (e.key === 'Escape') {
+                    dropdown.classList.add('hidden');
+                    currentIdx = -1;
+                }
+            });
+
+            /* Cerrar al hacer click fuera */
+            document.addEventListener('click', function (e) {
+                if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                    currentIdx = -1;
+                }
+            });
+        }
+    })();
     </script>
     {% endblock %}
 
