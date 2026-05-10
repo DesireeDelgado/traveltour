@@ -118,54 +118,42 @@
 </main>
 
 <script>
-// Comprimir imágenes en el cliente antes de subirlas
 document.addEventListener('DOMContentLoaded', () => {
+    const form = document.querySelector('form');
     const fileInput = document.querySelector('input[type="file"]');
     const submitBtn = document.getElementById('submit-btn');
-    const submitText = document.getElementById('submit-text');
-    const originalText = submitText ? submitText.innerText : 'Guardar Itinerario';
-    // Verificar que el elemento existe antes de agregar el event listener
-    if (fileInput) {
-        fileInput.addEventListener('change', async (event) => {
-            const files = event.target.files;
-            if (files.length === 0) return;
-            // Deshabilitar el botón de submit y mostrar texto de carga
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitText.innerText = 'Comprimiendo...';
-            }
-    // Crear un nuevo DataTransfer para almacenar los archivos comprimidos
+
+    if (form && fileInput) {
+        form.addEventListener('submit', async (e) => {
+            if (fileInput.files.length === 0) return;
+            
+            e.preventDefault(); // Detenemos el envío sí o sí
+            
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'Procesando imágenes una a una...';
+
             const dataTransfer = new DataTransfer();
-            const options = {
-                maxSizeMB: 0.5,
-                maxWidthOrHeight: 800,
-                useWebWorker: true
-            };
-        // Comprimir cada imagen seleccionada
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                try {
-                    console.log(`Comprimiendo la imagen: ${file.name}`);
-                    const compressedFile = await imageCompression(file, options);
-                    console.log(`Imagen comprimida con éxito: ${file.name}`);
-                    
-                    const newFile = new File([compressedFile], file.name, {
-                        type: compressedFile.type,
-                        lastModified: Date.now()
-                    });
-                    dataTransfer.items.add(newFile);
-                } catch (error) {
-                    console.error('Error comprimiendo la imagen:', error);
-                    dataTransfer.items.add(file);
-                }
+            const files = Array.from(fileInput.files);
+
+            for (const file of files) {
+                // Aquí forzamos la espera real
+                const compressed = await imageCompression(file, {
+                    maxSizeMB: 0.3, 
+                    maxWidthOrHeight: 800,
+                    useWebWorker: true,
+                    preserveExif: false
+                });
+
+                const newFile = new File([compressed], file.name, { type: 'image/jpeg' });
+                dataTransfer.items.add(newFile);
+                console.log(`Finalizada: ${file.name}`);
             }
 
+            // Sustituimos los archivos del input por los comprimidos
             fileInput.files = dataTransfer.files;
-
-            if (submitBtn) {
-                submitBtn.disabled = false;
-                submitText.innerText = originalText;
-            }
+            
+            // Enviamos el formulario manualmente
+            form.submit(); 
         });
     }
 });
