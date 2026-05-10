@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Comentario;
 use App\Entity\Viaje;
+use App\Form\ComentarioType;
 use App\Form\ViajeType;
 use App\Repository\ViajeRepository;
 use App\Repository\FavoritosRepository;
@@ -125,7 +127,7 @@ final class ViajeController extends AbstractController
     }
 
 #[Route('/{id}', name: 'app_viaje_show', methods: ['GET'])]
-public function show(Viaje $viaje, FavoritosRepository $favRepo): Response
+public function show(Request $request, Viaje $viaje, FavoritosRepository $favRepo): Response
 {
     $user = $this->getUser();
     $isFavorito = false;
@@ -133,15 +135,62 @@ public function show(Viaje $viaje, FavoritosRepository $favRepo): Response
     if ($user) {
         $favorito = $favRepo->findOneBy([
             'id_usuario' => $user,
-            'id_viaje' => $viaje
+            'id_viaje'   => $viaje,
         ]);
         $isFavorito = ($favorito !== null);
     }
 
+    // Token de un solo uso para prevenir envíos duplicados
+    $commentSid = bin2hex(random_bytes(8));
+    $request->getSession()->set('comment_sid_' . $viaje->getId(), $commentSid);
+
+    $comentarioForm = $this->createForm(ComentarioType::class, new Comentario());
+
     return $this->render('viaje/show.html.twig', [
-        'viaje' => $viaje,
-        'isFavorito' => $isFavorito, 
+        'viaje'          => $viaje,
+        'isFavorito'     => $isFavorito,
+        'comentarioForm' => $comentarioForm,
+        'comment_sid'    => $commentSid,
     ]);
+}
+
+#[Route('/{id}/comentar', name: 'app_viaje_comentar', methods: ['POST'])]
+public function comentar(Request $request, Viaje $viaje, EntityManagerInterface $entityManager): Response
+{
+    $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+    $session    = $request->getSession();
+    $sessionKey = 'comment_sid_' . $viaje->getId();
+
+    // Verificar y consumir el token de un solo uso
+    $expectedSid  = $session->get($sessionKey);
+    $submittedSid = $request->request->get('comment_sid', '');
+
+    if (!$expectedSid || $submittedSid !== $expectedSid) {
+        // Token ya consumido o inválido: ignorar el envío duplicado
+        return $this->redirectToRoute('app_viaje_show', ['id' => $viaje->getId()]);
+    }
+
+    // Consumir el token inmediatamente para que no pueda reutilizarse
+    $session->remove($sessionKey);
+
+    $comentario = new Comentario();
+    $form = $this->createForm(ComentarioType::class, $comentario);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $comentario
+            ->setIdUsuario($this->getUser())
+            ->setIdViaje($viaje)
+            ->setFechaCreacion(new \DateTimeImmutable());
+
+        $entityManager->persist($comentario);
+        $entityManager->flush();
+
+        $this->addFlash('success', '¡Comentario publicado con éxito!');
+    }
+
+    return $this->redirectToRoute('app_viaje_show', ['id' => $viaje->getId()]);
 }
 
     #[Route('/{id}/edit', name: 'app_viaje_edit', methods: ['GET', 'POST'])]

@@ -143,6 +143,123 @@
                 </div>
             </div>
         </div>
+
+        {# =================== SECCIÓN DE COMENTARIOS =================== #}
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+            <div class="bg-white rounded-2xl shadow-sm p-6 sm:p-10 border border-gray-100">
+
+                {# Título igual que el resto de secciones #}
+                <h2 class="text-2xl font-bold text-gray-900 mb-8 flex items-center">
+                    {{ ux_icon('lucide:message-square-text', {'class': 'w-6 h-6 mr-3 text-blue-600'}) }}
+                    Comentarios
+                    <span class="ml-3 bg-blue-50 text-blue-600 text-sm font-semibold px-3 py-1 rounded-full">
+                        {{ viaje.comentarios|length }}
+                    </span>
+                </h2>
+
+                {# ---- Formulario de nuevo comentario ---- #}
+                {% if app.user %}
+                    {{ form_start(comentarioForm, {
+                        'action': path('app_viaje_comentar', {'id': viaje.id}),
+                        'method': 'POST',
+                        'attr': {'class': 'mb-10', 'id': 'comment-form'}
+                    }) }}
+                        {# Token de envío único: evita que el mismo formulario se procese más de una vez #}
+                        <input type="hidden" name="comment_sid" value="{{ comment_sid }}">
+                        {{ form_widget(comentarioForm.comentario, {
+                            'attr': {
+                                'rows': 5,
+                                'placeholder': 'Comparte tu experiencia sobre este viaje...',
+                                'class': 'block w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 placeholder-gray-400 transition-colors focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400',
+                                'style': 'min-height: 6rem; resize: vertical; box-sizing: border-box;'
+                            }
+                        }) }}
+                        {{ form_errors(comentarioForm.comentario) }}
+                        <div class="flex justify-end mt-3">
+                            <button type="submit" id="btn-comentario-submit"
+                                    class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold py-2.5 px-6 rounded-lg transition-all duration-200 shadow-md text-sm">
+                                {{ ux_icon('lucide:send', {'class': 'w-4 h-4'}) }}
+                                Publicar comentario
+                            </button>
+                        </div>
+                    {{ form_end(comentarioForm) }}
+                {% else %}
+                    <div class="mb-10 bg-blue-50 border border-blue-100 rounded-xl px-6 py-4 flex items-center gap-3">
+                        {{ ux_icon('lucide:lock', {'class': 'w-5 h-5 text-blue-400 flex-shrink-0'}) }}
+                        <p class="text-blue-700 text-sm font-medium">
+                            <a href="{{ path('app_login') }}" class="underline underline-offset-2 hover:text-blue-900 transition-colors">Inicia sesión</a>
+                            para dejar un comentario.
+                        </p>
+                    </div>
+                {% endif %}
+
+                {# ---- Lista de comentarios ---- #}
+                {% if viaje.comentarios|length > 0 %}
+                    <div class="space-y-5">
+                        {% for comentario in viaje.comentarios %}
+                            {% set avatarUrl = comentario.idUsuario.urlFotoPerfil|default(
+                                'https://ui-avatars.com/api/?name=' ~ comentario.idUsuario.nickname|url_encode ~ '&background=dbeafe&color=2563eb&bold=true'
+                            ) %}
+                            <div class="flex gap-4 group" id="comentario-{{ comentario.id }}">
+
+                                {# Avatar clicable #}
+                                <a href="{{ path('app_usuario_show', {'id': comentario.idUsuario.id}) }}"
+                                   class="flex-shrink-0 mt-1">
+                                    <img src="{{ avatarUrl }}"
+                                         alt="@{{ comentario.idUsuario.nickname }}"
+                                         class="w-11 h-11 rounded-full object-cover border-2 border-blue-100 hover:ring-2 hover:ring-blue-400 transition-all">
+                                </a>
+
+                                <div class="flex-1 bg-gray-50 rounded-2xl p-5 border border-gray-100 hover:border-blue-100 transition-colors duration-200">
+                                    <div class="flex items-start justify-between gap-2 mb-2">
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            {# Nickname clicable #}
+                                            <a href="{{ path('app_usuario_show', {'id': comentario.idUsuario.id}) }}"
+                                               class="font-semibold text-gray-900 hover:text-blue-600 transition-colors">
+                                                @{{ comentario.idUsuario.nickname }}
+                                            </a>
+                                            {% if comentario.idUsuario == viaje.idUsuario %}
+                                                <span class="inline-flex items-center gap-1 text-xs bg-blue-100 text-blue-700 font-medium px-2 py-0.5 rounded-full">
+                                                    {{ ux_icon('lucide:crown', {'class': 'w-3 h-3'}) }} Autor del viaje
+                                                </span>
+                                            {% endif %}
+                                            <span class="text-gray-300">·</span>
+                                            <time class="text-gray-400 text-sm">
+                                                {{ comentario.fechaCreacion|date('d/m/Y') }}
+                                            </time>
+                                        </div>
+
+                                        {# Botón eliminar: solo autor del comentario O dueño del viaje #}
+                                        {% if app.user and (app.user == comentario.idUsuario or app.user == viaje.idUsuario) %}
+                                            <form method="post"
+                                                  action="{{ path('app_comentario_delete', {'id': comentario.id}) }}"
+                                                  onsubmit="return confirm('¿Seguro que quieres eliminar este comentario?');"
+                                                  class="flex-shrink-0">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ comentario.id) }}">
+                                                <button type="submit"
+                                                        title="Eliminar comentario"
+                                                        class="opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity duration-200 p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50">
+                                                    {{ ux_icon('lucide:trash-2', {'class': 'w-4 h-4'}) }}
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                    <p class="text-gray-700 leading-relaxed">{{ comentario.comentario }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-10 text-gray-400">
+                        {{ ux_icon('lucide:message-square-text', {'class': 'w-12 h-12 mx-auto mb-3 opacity-20'}) }}
+                        <p class="font-medium">Aún no hay comentarios. ¡Sé el primero!</p>
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+        {# ============================================================= #}
+
     </main>
 
     {# JAVASCRIPT PARA NO RECARGAR LA PÁGINA #}
@@ -201,6 +318,29 @@
         .lum-lightbox-image {
             @apply rounded-2xl shadow-2xl border-4 border-white/10;
         }
+
+        /* Textarea de comentario (CSS puro: @apply no funciona en bloques <style> de Twig) */
+        #comment-form textarea {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            background: #fff;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            color: #374151;
+            line-height: 1.625;
+            resize: vertical;
+            min-height: 6rem;
+            transition: border-color .15s, box-shadow .15s;
+        }
+        #comment-form textarea:focus {
+            outline: none;
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(59,130,246,.2);
+        }
+        #comment-form textarea::placeholder { color: #9ca3af; }
     </style>
 {% endblock %}
 
@@ -208,16 +348,35 @@
     {{ parent() }}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+
+            // --- Galería Luminous ---
             const galleryElements = document.querySelectorAll('.galeria-item');
             if (galleryElements.length > 0) {
-                // Configuramos explícitamente LuminousGallery estableciendo opciones de Luminous en el tercer argumento
-                new LuminousGallery(galleryElements, {
-                    arrowNavigation: true
-                }, {
-                    closeOnScroll: false,
-                    closeWithEscape: true
+                new LuminousGallery(galleryElements, { arrowNavigation: true }, {
+                    closeOnScroll: false, closeWithEscape: true
                 });
             }
+
+            // --- Prevenir doble envío del formulario de comentario ---
+            const commentForm = document.getElementById('comment-form');
+            if (commentForm) {
+                commentForm.addEventListener('submit', function(e) {
+                    const btn = document.getElementById('btn-comentario-submit');
+                    if (btn) {
+                        if (btn.dataset.submitting === '1') {
+                            // Ya se está enviando: bloquear
+                            e.preventDefault();
+                            return false;
+                        }
+                        btn.dataset.submitting = '1';
+                        btn.disabled = true;
+                        btn.style.opacity = '0.7';
+                        btn.style.cursor = 'not-allowed';
+                        btn.innerHTML = '<svg class="w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg> Publicando...';
+                    }
+                });
+            }
+
         });
     </script>
 {% endblock %}

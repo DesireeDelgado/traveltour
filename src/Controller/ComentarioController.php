@@ -71,11 +71,23 @@ final class ComentarioController extends AbstractController
     #[Route('/{id}', name: 'app_comentario_delete', methods: ['POST'])]
     public function delete(Request $request, Comentario $comentario, EntityManagerInterface $entityManager): Response
     {
+        $user  = $this->getUser();
+        $viaje = $comentario->getIdViaje();
+
+        // Seguridad: solo el autor del comentario O el dueño del viaje pueden eliminarlo
+        $esAutor      = ($comentario->getIdUsuario() === $user);
+        $esDuenoViaje = ($viaje !== null && $viaje->getIdUsuario() === $user);
+
+        if (!$esAutor && !$esDuenoViaje) {
+            throw $this->createAccessDeniedException('No tienes permiso para eliminar este comentario.');
+        }
+
         if ($this->isCsrfTokenValid('delete'.$comentario->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($comentario);
             $entityManager->flush();
+            $this->addFlash('success', 'Comentario eliminado correctamente.');
         }
 
-        return $this->redirectToRoute('app_comentario_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_viaje_show', ['id' => $viaje?->getId()], Response::HTTP_SEE_OTHER);
     }
 }
