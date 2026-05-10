@@ -64,6 +64,19 @@ class AppPurgeUsersCommand extends Command
                 }
             }
 
+            // Eliminar físicamente las imágenes de los viajes del usuario
+            foreach ($usuario->getViajes() as $viaje) {
+                foreach ($viaje->getImagenes() as $imagen) {
+                    $imageFilename = $imagen->getUrlPath();
+                    if ($imageFilename) {
+                        $imageFilepath = $projectDir . '/storage/viajes/' . basename($imageFilename);
+                        if ($filesystem->exists($imageFilepath)) {
+                            $filesystem->remove($imageFilepath);
+                        }
+                    }
+                }
+            }
+
             $this->entityManager->remove($usuario);
             $contador++;
         }
