@@ -265,26 +265,21 @@
     {# JAVASCRIPT PARA NO RECARGAR LA PÁGINA #}
     <script>
         document.getElementById('btn-favorito').addEventListener('click', function(e) {
-            e.preventDefault(); // Evita que la página se recargue
+            e.preventDefault();
             const btn = this;
             const url = btn.getAttribute('href');
             const textSpan = document.getElementById('fav-text');
             const iconContainer = document.getElementById('fav-icon-container');
 
-            fetch(url, {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            })
+            fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
             .then(response => response.json())
             .then(data => {
                 if (data.isFavorito) {
-                    // Estado: Guardado (Azul)
                     btn.classList.remove('bg-rose-50', 'text-rose-600', 'hover:bg-rose-100');
                     btn.classList.add('bg-blue-100', 'text-blue-700');
                     textSpan.textContent = 'Guardado en favoritos';
-                    // Cambiamos el icono a azul relleno manualmente (o con una clase)
                     iconContainer.innerHTML = `<svg class="w-5 h-5 fill-blue-600 text-blue-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`;
                 } else {
-                    // Estado: No guardado (Rojo original)
                     btn.classList.remove('bg-blue-100', 'text-blue-700');
                     btn.classList.add('bg-rose-50', 'text-rose-600', 'hover:bg-rose-100');
                     textSpan.textContent = 'Guardar en favoritos';
@@ -294,32 +289,148 @@
             .catch(err => console.error('Error:', err));
         });
     </script>
+
+    {# ── LIGHTBOX PERSONALIZADO ────────────────────────────────────── #}
+    <div id="custom-lightbox" role="dialog" aria-modal="true" aria-label="Visor de fotos">
+        {# Fondo clicable para cerrar #}
+        <div id="lb-overlay"></div>
+
+        {# Flecha anterior #}
+        <button id="lb-prev" class="lb-nav-btn" title="Foto anterior">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+
+        {# Imagen ampliada #}
+        <div id="lb-img-wrap">
+            <img id="lb-img" src="" alt="Foto ampliada">
+        </div>
+
+        {# Flecha siguiente #}
+        <button id="lb-next" class="lb-nav-btn" title="Foto siguiente">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+
+        {# Botón cerrar #}
+        <button id="lb-close" title="Cerrar">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+
+        {# Contador #}
+        <div id="lb-counter"></div>
+    </div>
+
 {% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
     <style>
-        /* Fondo desenfocado y oscuro */
-        .lum-backdrop {
-            @apply bg-black/50 backdrop-blur-lg !important;
+        /* ── Lightbox personalizado ────────────────────────────────── */
+        #custom-lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(15, 23, 42, 0.35);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            align-items: center;
+            justify-content: center;
+        }
+        #custom-lightbox.lb-open {
+            display: flex;
+        }
+        #lb-overlay {
+            position: absolute;
+            inset: 0;
+            cursor: zoom-out;
+        }
+        #lb-img-wrap {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-width: min(90vw, 960px);
+            max-height: 85vh;
+            animation: lb-in 0.22s cubic-bezier(.4,0,.2,1);
+        }
+        @keyframes lb-in {
+            from { opacity: 0; transform: scale(0.93); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+        #lb-img {
+            max-width: 100%;
+            max-height: 85vh;
+            border-radius: 1rem;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+            object-fit: contain;
+            display: block;
+        }
+        .lb-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 3;
+            background: rgba(255,255,255,0.15);
+            border: 1.5px solid rgba(255,255,255,0.35);
+            border-radius: 50%;
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #fff;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            transition: background .18s, transform .18s;
+        }
+        .lb-nav-btn svg { width: 1.25rem; height: 1.25rem; }
+        .lb-nav-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-50%) scale(1.08);
+        }
+        #lb-prev { left: 1.25rem; }
+        #lb-next { right: 1.25rem; }
+        #lb-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            z-index: 4;
+            background: rgba(255,255,255,0.15);
+            border: 1.5px solid rgba(255,255,255,0.35);
+            border-radius: 50%;
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #fff;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            transition: background .18s;
+        }
+        #lb-close svg { width: 1rem; height: 1rem; }
+        #lb-close:hover { background: rgba(239,68,68,0.5); }
+        #lb-counter {
+            position: absolute;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            color: rgba(255,255,255,0.9);
+            font-size: 0.8125rem;
+            font-weight: 500;
+            background: rgba(0,0,0,0.3);
+            padding: 0.2rem 0.8rem;
+            border-radius: 999px;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            letter-spacing: 0.05em;
         }
 
-        /* Forzar que las flechas aparezcan y sean blancas */
-        .lum-next-button, .lum-previous-button {
-            @apply text-white scale-[2] opacity-80 hover:opacity-100 transition-all !important;
-            display: block !important;
-        }
-
-        /* Ajustar posición de las flechas para que no se peguen al borde */
-        .lum-previous-button { left: 40px !important; }
-        .lum-next-button { right: 40px !important; }
-
-        /* Hacer que la imagen tenga bordes redondeados y sombra */
-        .lum-lightbox-image {
-            @apply rounded-2xl shadow-2xl border-4 border-white/10;
-        }
-
-        /* Textarea de comentario (CSS puro: @apply no funciona en bloques <style> de Twig) */
+        /* ── Textarea de comentario (CSS puro) ─────────────────────── */
         #comment-form textarea {
             display: block;
             width: 100%;
@@ -349,30 +460,76 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 
-            // --- Galería Luminous ---
-            const galleryElements = document.querySelectorAll('.galeria-item');
-            if (galleryElements.length > 0) {
-                new LuminousGallery(galleryElements, { arrowNavigation: true }, {
-                    closeOnScroll: false, closeWithEscape: true
+            // ── Lightbox personalizado ────────────────────────────────
+            const lb        = document.getElementById('custom-lightbox');
+            const lbImg     = document.getElementById('lb-img');
+            const lbCounter = document.getElementById('lb-counter');
+            const lbOverlay = document.getElementById('lb-overlay');
+            const items     = Array.from(document.querySelectorAll('.galeria-item'));
+            let currentIdx  = 0;
+
+            function openLb(idx) {
+                currentIdx = idx;
+                lbImg.src  = items[idx].href;
+                lbCounter.textContent = (idx + 1) + ' / ' + items.length;
+                lb.classList.add('lb-open');
+                document.body.style.overflow = 'hidden';
+                lbImg.parentElement.style.animation = 'none';
+                requestAnimationFrame(() => {
+                    lbImg.parentElement.style.animation = '';
                 });
             }
 
-            // --- Prevenir doble envío del formulario de comentario ---
+            function closeLb() {
+                lb.classList.remove('lb-open');
+                document.body.style.overflow = '';
+                setTimeout(() => { lbImg.src = ''; }, 250);
+            }
+
+            function navigate(dir) {
+                currentIdx = (currentIdx + dir + items.length) % items.length;
+                lbImg.src  = items[currentIdx].href;
+                lbCounter.textContent = (currentIdx + 1) + ' / ' + items.length;
+                lbImg.parentElement.style.animation = 'none';
+                requestAnimationFrame(() => {
+                    lbImg.parentElement.style.animation = 'lb-in 0.18s cubic-bezier(.4,0,.2,1)';
+                });
+            }
+
+            if (items.length > 0) {
+                items.forEach((item, idx) => {
+                    item.addEventListener('click', e => {
+                        e.preventDefault();
+                        openLb(idx);
+                    });
+                });
+                document.getElementById('lb-prev').addEventListener('click', e => { e.stopPropagation(); navigate(-1); });
+                document.getElementById('lb-next').addEventListener('click', e => { e.stopPropagation(); navigate(1);  });
+                document.getElementById('lb-close').addEventListener('click', closeLb);
+                lbOverlay.addEventListener('click', closeLb);
+                document.addEventListener('keydown', e => {
+                    if (!lb.classList.contains('lb-open')) return;
+                    if (e.key === 'Escape')      closeLb();
+                    if (e.key === 'ArrowLeft')   navigate(-1);
+                    if (e.key === 'ArrowRight')  navigate(1);
+                });
+            }
+
+            // ── Prevenir doble envío del formulario de comentario ─────
             const commentForm = document.getElementById('comment-form');
             if (commentForm) {
                 commentForm.addEventListener('submit', function(e) {
                     const btn = document.getElementById('btn-comentario-submit');
                     if (btn) {
                         if (btn.dataset.submitting === '1') {
-                            // Ya se está enviando: bloquear
                             e.preventDefault();
                             return false;
                         }
                         btn.dataset.submitting = '1';
                         btn.disabled = true;
                         btn.style.opacity = '0.7';
-                        btn.style.cursor = 'not-allowed';
-                        btn.innerHTML = '<svg class="w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg> Publicando...';
+                        btn.style.cursor  = 'not-allowed';
+                        btn.innerHTML = '<svg style="width:1rem;height:1rem;animation:spin 1s linear infinite;display:inline-block;vertical-align:middle" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle style="opacity:.25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path style="opacity:.75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg> Publicando...';
                     }
                 });
             }
