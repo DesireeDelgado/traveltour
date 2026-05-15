@@ -50,6 +50,10 @@ final class UsuarioController extends AbstractController
     #[Route('/{id}', name: 'app_usuario_show', methods: ['GET'])]
     public function show(Usuario $usuario): Response
     {
+        if ($usuario->getDeletedAt() !== null) {
+            throw $this->createNotFoundException('Este perfil no está disponible.');
+        }
+
         return $this->render('usuario/show.html.twig', [
             'usuario' => $usuario,
         ]);

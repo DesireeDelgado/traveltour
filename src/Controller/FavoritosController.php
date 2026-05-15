@@ -24,8 +24,18 @@ final class FavoritosController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
         // 3. Filtramos para que solo salgan los registros del usuario actual
+        // y que el dueño del viaje no esté en soft-delete
+        $favoritos = $favoritosRepository->createQueryBuilder('f')
+            ->join('f.id_viaje', 'v')
+            ->join('v.id_usuario', 'u')
+            ->where('f.id_usuario = :user')
+            ->andWhere('u.deletedAt IS NULL')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult();
+
         return $this->render('favoritos/index.html.twig', [
-            'favoritos' => $favoritosRepository->findBy(['id_usuario' => $user]),
+            'favoritos' => $favoritos,
         ]);
     }
 

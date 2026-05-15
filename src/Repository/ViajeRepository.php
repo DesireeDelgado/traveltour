@@ -44,6 +44,8 @@ class ViajeRepository extends ServiceEntityRepository
     public function findTopPopulares(int $limit = 3): array
     {
         return $this->createQueryBuilder('v')
+            ->join('v.id_usuario', 'u')
+            ->where('u.deletedAt IS NULL')
             ->leftJoin('v.favoritos', 'f')
             ->groupBy('v.id')
             ->orderBy('COUNT(f.id)', 'DESC')
@@ -54,7 +56,9 @@ class ViajeRepository extends ServiceEntityRepository
 
     public function findByFilters(?float $presupuesto, ?int $dias, ?string $lugar): array
     {
-        $qb = $this->createQueryBuilder('v');
+        $qb = $this->createQueryBuilder('v')
+            ->join('v.id_usuario', 'u')
+            ->andWhere('u.deletedAt IS NULL');
 
         if ($presupuesto !== null) {
             $qb->andWhere('v.presupuesto <= :presupuesto')
@@ -79,7 +83,9 @@ class ViajeRepository extends ServiceEntityRepository
     {
         $resultados = $this->createQueryBuilder('v')
             ->select('DISTINCT v.destino')
+            ->join('v.id_usuario', 'u')
             ->where('v.destino IS NOT NULL')
+            ->andWhere('u.deletedAt IS NULL')
             ->orderBy('v.destino', 'ASC')
             ->getQuery()
             ->getScalarResult();
@@ -96,7 +102,9 @@ class ViajeRepository extends ServiceEntityRepository
     {
         $resultados = $this->createQueryBuilder('v')
             ->select('DISTINCT v.destino')
+            ->join('v.id_usuario', 'u')
             ->where('v.destino IS NOT NULL')
+            ->andWhere('u.deletedAt IS NULL')
             ->andWhere('LOWER(v.destino) LIKE LOWER(:q)')
             ->setParameter('q', '%' . $q . '%')
             ->orderBy('v.destino', 'ASC')

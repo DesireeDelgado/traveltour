@@ -129,6 +129,10 @@ final class ViajeController extends AbstractController
 #[Route('/{id}', name: 'app_viaje_show', methods: ['GET'])]
 public function show(Request $request, Viaje $viaje, FavoritosRepository $favRepo): Response
 {
+    if ($viaje->getIdUsuario() && $viaje->getIdUsuario()->getDeletedAt() !== null) {
+        throw $this->createNotFoundException('Este viaje no está disponible.');
+    }
+
     $user = $this->getUser();
     $isFavorito = false;
 
