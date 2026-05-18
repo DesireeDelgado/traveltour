@@ -108,11 +108,6 @@
                                     
                                     <span id="fav-text">{{ isFavorito ? 'Guardado en favoritos' : 'Guardar en favoritos' }}</span>
                                 </a>
-
-                                <button class="w-full flex items-center justify-center space-x-2 bg-gray-50 text-gray-700 hover:bg-gray-100 py-3 px-4 rounded-xl font-medium transition-colors border border-gray-200">
-                                    {{ ux_icon('lucide:share-2', {'class': 'w-5 h-5'}) }}
-                                    <span>Compartir Itinerario</span>
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -145,7 +140,7 @@
         </div>
 
         {# =================== SECCIÓN DE COMENTARIOS =================== #}
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        <div class="max-w-7xl mx-auto px-4 mt-6 sm:px-6 lg:px-8 pb-12">
             <div class="bg-white rounded-2xl shadow-sm p-6 sm:p-10 border border-gray-100">
 
                 {# Título igual que el resto de secciones #}
