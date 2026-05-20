@@ -62,12 +62,19 @@ class Viaje
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $gastronomia = null;
 
+    /**
+     * @var Collection<int, Notificacion>
+     */
+    #[ORM\OneToMany(targetEntity: Notificacion::class, mappedBy: 'viaje')]
+    private Collection $notificaciones;
+
     public function __construct()
     {
         $this->comentarios = new ArrayCollection();
         $this->imagenes = new ArrayCollection();
         $this->favoritos = new ArrayCollection();
         $this->fecha_creacion = new \DateTimeImmutable();
+        $this->notificaciones = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -269,6 +276,36 @@ class Viaje
     public function setGastronomia(?string $gastronomia): static
     {
         $this->gastronomia = $gastronomia;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Notificacion>
+     */
+    public function getNotificaciones(): Collection
+    {
+        return $this->notificaciones;
+    }
+
+    public function addNotificacione(Notificacion $notificacione): static
+    {
+        if (!$this->notificaciones->contains($notificacione)) {
+            $this->notificaciones->add($notificacione);
+            $notificacione->setViaje($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNotificacione(Notificacion $notificacione): static
+    {
+        if ($this->notificaciones->removeElement($notificacione)) {
+            // set the owning side to null (unless already changed)
+            if ($notificacione->getViaje() === $this) {
+                $notificacione->setViaje(null);
+            }
+        }
 
         return $this;
     }

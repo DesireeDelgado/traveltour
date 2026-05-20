@@ -76,11 +76,18 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $deletedAt = null;
 
+    /**
+     * @var Collection<int, Notificacion>
+     */
+    #[ORM\OneToMany(targetEntity: Notificacion::class, mappedBy: 'usuario')]
+    private Collection $notificaciones;
+
     public function __construct()
     {
         $this->viajes = new ArrayCollection();
         $this->comentarios = new ArrayCollection();
         $this->favoritos = new ArrayCollection();
+        $this->notificaciones = new ArrayCollection();
     }
 
     public function getEmail(): ?string
@@ -302,6 +309,36 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
     public function setDeletedAt(?\DateTimeImmutable $deletedAt): static
     {
         $this->deletedAt = $deletedAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Notificacion>
+     */
+    public function getNotificaciones(): Collection
+    {
+        return $this->notificaciones;
+    }
+
+    public function addNotificacione(Notificacion $notificacione): static
+    {
+        if (!$this->notificaciones->contains($notificacione)) {
+            $this->notificaciones->add($notificacione);
+            $notificacione->setUsuario($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNotificacione(Notificacion $notificacione): static
+    {
+        if ($this->notificaciones->removeElement($notificacione)) {
+            // set the owning side to null (unless already changed)
+            if ($notificacione->getUsuario() === $this) {
+                $notificacione->setUsuario(null);
+            }
+        }
 
         return $this;
     }
