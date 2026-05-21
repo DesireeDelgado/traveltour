@@ -183,12 +183,36 @@ public function comentar(Request $request, Viaje $viaje, EntityManagerInterface 
     $form->handleRequest($request);
 
     if ($form->isSubmitted() && $form->isValid()) {
+        $comentarista = $this->getUser();
         $comentario
-            ->setIdUsuario($this->getUser())
+            ->setIdUsuario($comentarista)
             ->setIdViaje($viaje)
             ->setFechaCreacion(new \DateTimeImmutable());
 
         $entityManager->persist($comentario);
+
+        // LOGICA DE NOTIFICACION
+        $autorViaje = $viaje->getIdUsuario();
+        if ($autorViaje && $autorViaje !== $comentarista) {
+            $mensaje = sprintf('<strong>@%s</strong> ha comentado en tu viaje: <strong>%s</strong>', htmlspecialchars($comentarista->getNickname()), htmlspecialchars($viaje->getTitulo()));
+            
+            $notificacionExistente = $entityManager->getRepository(\App\Entity\Notificacion::class)->findOneBy([
+                'usuario' => $autorViaje,
+                'viaje' => $viaje,
+                'mensaje' => $mensaje
+            ]);
+
+            if (!$notificacionExistente) {
+                $notificacion = new \App\Entity\Notificacion();
+                $notificacion->setUsuario($autorViaje);
+                $notificacion->setViaje($viaje);
+                $notificacion->setLeido(false);
+                $notificacion->setCreatedAt(new \DateTimeImmutable());
+                $notificacion->setMensaje($mensaje);
+                $entityManager->persist($notificacion);
+            }
+        }
+
         $entityManager->flush();
 
         $this->addFlash('success', '¡Comentario publicado con éxito!');
@@ -226,11 +250,10 @@ public function delete(Request $request, ?Viaje $viaje, EntityManagerInterface $
         return $this->redirectToRoute('app_viaje_index');
     }
 
-    // --- AÑADE ESTA COMPROBACIÓN ---
+    //comprobacion de seguridad: solo el dueño del viaje puede eliminarlo
     if ($viaje->getIdUsuario() !== $this->getUser()) {
         throw $this->createAccessDeniedException('No puedes borrar viajes de otros usuarios.');
     }
-    // -------------------------------
 
     if ($this->isCsrfTokenValid('delete'.$viaje->getId(), $request->getPayload()->getString('_token'))) {
         $entityManager->remove($viaje);

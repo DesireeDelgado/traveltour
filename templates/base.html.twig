@@ -64,6 +64,37 @@
                 </a>
 
                 {% if app.user %}
+                    {# CAMPANA DE NOTIFICACIONES #}
+                    {% set unread_notifications = app.user.notificaciones|filter(n => not n.leido) %}
+                    <div class="relative flex items-center" id="notification-bell">
+                        <button id="notification-btn" class="relative p-2 text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-white transition-colors focus:outline-none">
+                            {{ ux_icon('tabler:bell', {class: 'w-6 h-6'}) }}
+                            {% if unread_notifications|length > 0 %}
+                                <span class="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                                    {{ unread_notifications|length }}
+                                </span>
+                            {% endif %}
+                        </button>
+                        
+                        <div id="notification-dropdown" class="absolute right-0 top-full mt-2 w-72 sm:w-80 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-gray-200 dark:border-slate-700 z-50 hidden overflow-hidden">
+                            <div class="px-4 py-3 border-b border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/80">
+                                <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Notificaciones</h3>
+                            </div>
+                            <div class="max-h-80 overflow-y-auto">
+                                {% if app.user.notificaciones|length > 0 %}
+                                    {% for notif in app.user.notificaciones|sort((a, b) => b.createdAt <=> a.createdAt) %}
+                                        <a href="{{ path('app_notificacion_leer', {id: notif.id}) }}" class="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-slate-700 border-b border-gray-100 dark:border-slate-700 transition-colors whitespace-normal {{ not notif.leido ? 'bg-blue-50/50 dark:bg-blue-900/20' : '' }}">
+                                            <p class="text-sm text-gray-800 dark:text-gray-200 break-words leading-tight">{{ notif.mensaje|raw }}</p>
+                                            <p class="text-[11px] text-gray-500 mt-1">{{ notif.createdAt|date('d/m/Y H:i','Europe/Madrid') }}</p>
+                                        </a>
+                                    {% endfor %}
+                                {% else %}
+                                    <p class="px-4 py-8 text-sm text-center text-gray-500 dark:text-gray-400">No tienes notificaciones</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
                     {% set nav_avatar_url = app.user.urlFotoPerfil|default('https://ui-avatars.com/api/?name=' ~ app.user.nickname|url_encode) %}
 
                     <a href="{{ path('app_usuario_show', {'id': app.user.id}) }}" class="hidden lg:block">
@@ -145,6 +176,21 @@
 
             setupAutocomplete('search-input-desktop', 'autocomplete-dropdown-desktop');
             setupAutocomplete('search-input-mobile',  'autocomplete-dropdown-mobile');
+
+            /* Lógica de Notificaciones */
+            const notifBtn = document.getElementById('notification-btn');
+            const notifDropdown = document.getElementById('notification-dropdown');
+            if (notifBtn && notifDropdown) {
+                notifBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    notifDropdown.classList.toggle('hidden');
+                });
+                document.addEventListener('click', function(e) {
+                    if (!notifDropdown.contains(e.target) && !notifBtn.contains(e.target)) {
+                        notifDropdown.classList.add('hidden');
+                    }
+                });
+            }
         });
 
         /* ── Helpers ──────────────────────────────────────────────── */

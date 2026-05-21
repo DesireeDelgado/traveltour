@@ -31,9 +31,36 @@ final class ComentarioController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($comentario);
+
+            // LOGICA NOTIFICACION: Solo notificar si el que comenta no es el dueño del viaje
+            $viaje = $comentario->getIdViaje();
+            $autorViaje = $viaje?->getIdUsuario();
+            $comentarista = $this->getUser();
+
+            if ($autorViaje && $comentarista && $autorViaje !== $comentarista) {
+                $mensaje = sprintf('<strong>@%s</strong> ha comentado en tu viaje: <strong>%s</strong>', htmlspecialchars($comentarista->getNickname()), htmlspecialchars($viaje->getTitulo()));
+                
+                // Evitamos duplicados exactos
+                $notificacionExistente = $entityManager->getRepository(\App\Entity\Notificacion::class)->findOneBy([
+                    'usuario' => $autorViaje,
+                    'viaje' => $viaje,
+                    'mensaje' => $mensaje
+                ]);
+
+                if (!$notificacionExistente) {
+                    $notificacion = new \App\Entity\Notificacion();
+                    $notificacion->setUsuario($autorViaje);
+                    $notificacion->setViaje($viaje);
+                    $notificacion->setLeido(false);
+                    $notificacion->setCreatedAt(new \DateTimeImmutable());
+                    $notificacion->setMensaje($mensaje);
+                    $entityManager->persist($notificacion);
+                }
+            }
+
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_comentario_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_viaje_show', ['id' => $viaje?->getId()], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('comentario/new.html.twig', [
@@ -69,8 +96,14 @@ final class ComentarioController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_comentario_delete', methods: ['POST'])]
-    public function delete(Request $request, Comentario $comentario, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, ?Comentario $comentario, EntityManagerInterface $entityManager): Response
     {
+        // Si el comentario no existe (ya fue borrado), redirigimos al viaje o a la página de inicio
+        if (!$comentario) {
+            $referer = $request->headers->get('referer');
+            return $this->redirect($referer ?: '/');
+        }
+
         $user  = $this->getUser();
         $viaje = $comentario->getIdViaje();
 
@@ -83,6 +116,23 @@ final class ComentarioController extends AbstractController
         }
 
         if ($this->isCsrfTokenValid('delete'.$comentario->getId(), $request->getPayload()->getString('_token'))) {
+            
+            //Si el usuario que ha comentado borra su comentario, se borra la notificación 
+            $autorViaje = $viaje?->getIdUsuario();
+            if ($autorViaje && $autorViaje !== $comentario->getIdUsuario()) {
+                $mensaje = sprintf('<strong>@%s</strong> ha comentado en tu viaje: <strong>%s</strong>', htmlspecialchars($comentario->getIdUsuario()->getNickname()), htmlspecialchars($viaje->getTitulo()));
+                
+                $notificacionExistente = $entityManager->getRepository(\App\Entity\Notificacion::class)->findOneBy([
+                    'usuario' => $autorViaje,
+                    'viaje' => $viaje,
+                    'mensaje' => $mensaje
+                ]);
+                
+                if ($notificacionExistente) {
+                    $entityManager->remove($notificacionExistente);
+                }
+            }
+
             $entityManager->remove($comentario);
             $entityManager->flush();
             $this->addFlash('success', 'Comentario eliminado correctamente.');

@@ -65,12 +65,51 @@ final class FavoritosController extends AbstractController
     if ($favorito) {
         $entityManager->remove($favorito);
         $estado = false;
+
+        // Si quita el favorito, buscamos la notificación que se le envió al autor y la borramos (si queremos deshacerla)
+        $autorViaje = $viaje->getIdUsuario();
+        if ($autorViaje && $autorViaje !== $user) {
+            $mensaje = sprintf('<strong>@%s</strong> ha guardado en favoritos tu viaje: <strong>%s</strong>', htmlspecialchars($user->getNickname()), htmlspecialchars($viaje->getTitulo()));
+            $notificacionExistente = $entityManager->getRepository(\App\Entity\Notificacion::class)->findOneBy([
+                'usuario' => $autorViaje,
+                'viaje' => $viaje,
+                'mensaje' => $mensaje
+            ]);
+            // Si la notificación existe, se borra para no dejar un aviso "fantasma" de algo que ya quitó
+            if ($notificacionExistente) {
+                $entityManager->remove($notificacionExistente);
+            }
+        }
+
     } else {
         $nuevoFavorito = new \App\Entity\Favoritos();
         $nuevoFavorito->setIdUsuario($user);
         $nuevoFavorito->setIdViaje($viaje);
         $entityManager->persist($nuevoFavorito);
         $estado = true;
+
+        // LOGICA DE NOTIFICACION:
+        $autorViaje = $viaje->getIdUsuario();
+        if ($autorViaje && $autorViaje !== $user) {
+            $mensaje = sprintf('<strong>@%s</strong> ha guardado en favoritos tu viaje: <strong>%s</strong>', htmlspecialchars($user->getNickname()), htmlspecialchars($viaje->getTitulo()));
+            
+            // Comprobar si ya existe esa misma notificación exacta para que no se tripliquen al dar y quitar favorito muchas veces
+            $notificacionExistente = $entityManager->getRepository(\App\Entity\Notificacion::class)->findOneBy([
+                'usuario' => $autorViaje,
+                'viaje' => $viaje,
+                'mensaje' => $mensaje
+            ]);
+
+            if (!$notificacionExistente) {
+                $notificacion = new \App\Entity\Notificacion();
+                $notificacion->setUsuario($autorViaje);
+                $notificacion->setViaje($viaje);
+                $notificacion->setLeido(false);
+                $notificacion->setCreatedAt(new \DateTimeImmutable());
+                $notificacion->setMensaje($mensaje);
+                $entityManager->persist($notificacion);
+            }
+        }
     }
     // Guardamos los cambios en la base de datos
     $entityManager->flush();
