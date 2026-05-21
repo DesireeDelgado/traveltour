@@ -30,4 +30,26 @@ class NotificacionController extends AbstractController
         // Si el viaje fue borrado, redirigimos a la página de inicio
         return $this->redirectToRoute('app_dashboard'); 
     }
+    // RUTA PARA LIMPIAR NOTIFICACIONES
+    #[Route('/limpiar', name: 'app_notificacion_limpiar', methods: ['POST'])]
+    public function limpiar(EntityManagerInterface $entityManager, \Symfony\Component\HttpFoundation\Request $request): Response
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            throw $this->createAccessDeniedException('Debes estar logueado.');
+        }
+
+        // Validación del token CSRF 
+        if ($this->isCsrfTokenValid('limpiar_notificaciones', $request->request->get('_token'))) {
+            $notificaciones = $user->getNotificaciones();
+            foreach ($notificaciones as $notificacion) {
+                $entityManager->remove($notificacion);
+            }
+            $entityManager->flush();
+            
+            return $this->json(['success' => true]);
+        }
+
+        return $this->json(['success' => false], 400);
+    }
 }

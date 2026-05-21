@@ -88,6 +88,15 @@
                                             <p class="text-[11px] text-gray-500 mt-1">{{ notif.createdAt|date('d/m/Y H:i','Europe/Madrid') }}</p>
                                         </a>
                                     {% endfor %}
+                                    <div class="px-4 py-3 bg-gray-50 dark:bg-slate-800/80 sticky bottom-0 border-t border-gray-100 dark:border-slate-700 block" id="form-limpiar-wrapper">
+                                        <form id="form-limpiar-notificaciones" action="{{ path('app_notificacion_limpiar') }}" method="POST">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('limpiar_notificaciones') }}">
+                                            <button type="submit" class="w-full flex items-center justify-center gap-2 text-sm text-red-600 hover:text-red-700 font-medium transition-colors">
+                                                {{ ux_icon('tabler:trash', {class: 'w-4 h-4'}) }}
+                                                Limpiar notificaciones
+                                            </button>
+                                        </form>
+                                    </div>
                                 {% else %}
                                     <p class="px-4 py-8 text-sm text-center text-gray-500 dark:text-gray-400">No tienes notificaciones</p>
                                 {% endif %}
@@ -189,6 +198,35 @@
                     if (!notifDropdown.contains(e.target) && !notifBtn.contains(e.target)) {
                         notifDropdown.classList.add('hidden');
                     }
+                });
+            }
+            // Lógica para limpiar notificaciones
+            const formLimpiar = document.getElementById('form-limpiar-notificaciones');
+            if (formLimpiar) {
+                formLimpiar.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    if (!confirm('¿Seguro que quieres borrar todas tus notificaciones?')) {
+                        return;
+                    }
+                    
+                    fetch(this.action, {
+                        method: 'POST',
+                        body: new FormData(this)
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.success) {
+                            const notifContainer = notifDropdown.querySelector('.max-h-80');
+                            if (notifContainer) {
+                                notifContainer.innerHTML = '<p class="px-4 py-8 text-sm text-center text-gray-500 dark:text-gray-400">No tienes notificaciones</p>';
+                            }
+                            const badge = notifBtn.querySelector('span.bg-red-500');
+                            if (badge) {
+                                badge.remove();
+                            }
+                        }
+                    })
+                    .catch(() => {});
                 });
             }
         });
