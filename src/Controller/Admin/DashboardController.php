@@ -2,10 +2,17 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Comentario;
+use App\Entity\Usuario;
+use App\Entity\Viaje;
+use App\Controller\Admin\UsuarioCrudController;
+use App\Controller\Admin\ViajeCrudController;
+use App\Controller\Admin\ComentarioCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\HttpFoundation\Response;
 
 #[AdminDashboard(routePath: '/admin', routeName: 'admin')]
@@ -13,22 +20,8 @@ class DashboardController extends AbstractDashboardController
 {
     public function index(): Response
     {
-        return parent::index();
-
-        // Option 1. You can make your dashboard redirect to some common page of your backend
-        //
-        // return $this->redirectToRoute('admin_user_index');
-
-        // Option 2. You can make your dashboard redirect to different pages depending on the user
-        //
-        // if ('jane' === $this->getUser()->getUsername()) {
-        //     return $this->redirectToRoute('...');
-        // }
-
-        // Option 3. You can render some custom template to display a proper dashboard with widgets, etc.
-        // (tip: it's easier if your template extends from @EasyAdmin/page/content.html.twig)
-        //
-        // return $this->render('some/path/my-dashboard.html.twig');
+        $adminUrlGenerator = $this->container->get(AdminUrlGenerator::class);
+        return $this->redirect($adminUrlGenerator->setController(UsuarioCrudController::class)->generateUrl());
     }
 
     public function configureDashboard(): Dashboard
@@ -40,6 +33,8 @@ class DashboardController extends AbstractDashboardController
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
-        // yield MenuItem::linkTo(SomeCrudController::class, 'The Label', 'fas fa-list');
+        yield MenuItem::linkTo(UsuarioCrudController::class, 'Usuarios', 'fas fa-users');
+        yield MenuItem::linkTo(ViajeCrudController::class, 'Viajes', 'fas fa-plane');
+        yield MenuItem::linkTo(ComentarioCrudController::class, 'Comentarios', 'fas fa-comments');
     }
 }
