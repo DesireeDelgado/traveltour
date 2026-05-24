@@ -82,6 +82,9 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Notificacion::class, mappedBy: 'usuario')]
     private Collection $notificaciones;
 
+    #[ORM\Column(options: ['default' => false])]
+    private ?bool $baneado = false;
+
     public function __construct()
     {
         $this->viajes = new ArrayCollection();
@@ -339,6 +342,18 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
                 $notificacione->setUsuario(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isBaneado(): ?bool
+    {
+        return $this->baneado;
+    }
+
+    public function setBaneado(bool $baneado): static
+    {
+        $this->baneado = $baneado;
 
         return $this;
     }
