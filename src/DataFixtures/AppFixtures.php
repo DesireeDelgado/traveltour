@@ -109,6 +109,10 @@ class AppFixtures extends Fixture
                         ],
                 ]
             ],
+            'admin' => [
+                'email' => 'admin@traveltour.com',
+                'roles' => ['ROLE_ADMIN'],
+            ],
         ];
 
         foreach ($usuariosData as $nick => $uData) {
@@ -116,9 +120,9 @@ class AppFixtures extends Fixture
             $user = new Usuario();
             $user->setNickname($nick);
             $user->setEmail($uData['email']);
-            $user->setRoles(['ROLE_USER']);
+            $user->setRoles($uData['roles'] ?? ['ROLE_USER']);
             $user->setFechaRegistro(new \DateTimeImmutable());
-            $user->setBiografia($uData['bio']);
+            $user->setBiografia($uData['bio'] ?? null);
 
             $hashedPassword = $this->passwordHasher->hashPassword($user, '123456');
             $user->setPassword($hashedPassword);
@@ -126,7 +130,7 @@ class AppFixtures extends Fixture
             $manager->persist($user);
 
             // 2. Creamos los Viajes de este usuario (si tiene)
-            foreach ($uData['viajes'] as $vData) {
+            foreach ($uData['viajes'] ?? [] as $vData) {
                 $viaje = new Viaje();
                 $viaje->setTitulo($vData['titulo']);
                 $viaje->setDestino($vData['destino']);
