@@ -79,6 +79,11 @@ class AppCustomAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
 
+        // Si el usuario es administrador, redirigir al panel de administración
+        if (in_array('ROLE_ADMIN', $usuario->getRoles(), true)) {
+            return new RedirectResponse($this->urlGenerator->generate('admin'));
+        }
+
         // Ruta al home privado una vez logueado
         return new RedirectResponse($this->urlGenerator->generate('app_dashboard'));
     }
