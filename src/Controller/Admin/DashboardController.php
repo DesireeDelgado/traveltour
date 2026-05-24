@@ -36,5 +36,6 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkTo(UsuarioCrudController::class, 'Usuarios', 'fas fa-users');
         yield MenuItem::linkTo(ViajeCrudController::class, 'Viajes', 'fas fa-plane');
         yield MenuItem::linkTo(ComentarioCrudController::class, 'Comentarios', 'fas fa-comments');
+        yield MenuItem::linkToLogout('Cerrar sesión', 'fas fa-sign-out-alt');
     }
 }

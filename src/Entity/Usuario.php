@@ -297,11 +297,9 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function __toString(): String
+    public function __toString(): string
     {
-        return $this->id . "" . $this->email;
-
-
+        return (string) $this->email;
     }
 
     public function getDeletedAt(): ?\DateTimeImmutable
