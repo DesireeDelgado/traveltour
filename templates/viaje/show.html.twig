@@ -140,6 +140,7 @@
         </div>
 
         {# =================== SECCIÓN DE COMENTARIOS =================== #}
+        {% set comentarios_visibles = viaje.comentarios|filter(c => c.idUsuario.deletedAt is null and c.idUsuario.baneado == false) %}
         <div class="max-w-7xl mx-auto px-4 mt-6 sm:px-6 lg:px-8 pb-12">
             <div class="bg-white rounded-2xl shadow-sm p-6 sm:p-10 border border-gray-100">
 
@@ -148,7 +149,7 @@
                     {{ ux_icon('lucide:message-square-text', {'class': 'w-6 h-6 mr-3 text-blue-600'}) }}
                     Comentarios
                     <span class="ml-3 bg-blue-50 text-blue-600 text-sm font-semibold px-3 py-1 rounded-full">
-                        {{ viaje.comentarios|length }}
+                        {{ comentarios_visibles|length }}
                     </span>
                 </h2>
 
@@ -189,9 +190,9 @@
                 {% endif %}
 
                 {# ---- Lista de comentarios ---- #}
-                {% if viaje.comentarios|length > 0 %}
+                {% if comentarios_visibles|length > 0 %}
                     <div class="space-y-5">
-                        {% for comentario in viaje.comentarios %}
+                        {% for comentario in comentarios_visibles %}
                             {% set avatarUrl = comentario.idUsuario.urlFotoPerfil|default(
                                 'https://ui-avatars.com/api/?name=' ~ comentario.idUsuario.nickname|url_encode ~ '&background=dbeafe&color=2563eb&bold=true'
                             ) %}

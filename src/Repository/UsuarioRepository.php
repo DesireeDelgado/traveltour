@@ -44,6 +44,7 @@ class UsuarioRepository extends ServiceEntityRepository implements PasswordUpgra
         return $this->createQueryBuilder('u')
             ->andWhere('LOWER(u.nickname) LIKE LOWER(:q)')
             ->andWhere('u.deletedAt IS NULL')
+            ->andWhere('u.baneado = false')
             ->setParameter('q', '%' . $q . '%')
             ->orderBy('u.nickname', 'ASC')
             ->setMaxResults($limit)

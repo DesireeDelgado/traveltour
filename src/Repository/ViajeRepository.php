@@ -46,6 +46,7 @@ class ViajeRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('v')
             ->join('v.id_usuario', 'u')
             ->where('u.deletedAt IS NULL')
+            ->andWhere('u.baneado = false')
             ->leftJoin('v.favoritos', 'f')
             ->groupBy('v.id')
             ->orderBy('COUNT(f.id)', 'DESC')
@@ -58,7 +59,8 @@ class ViajeRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('v')
             ->join('v.id_usuario', 'u')
-            ->andWhere('u.deletedAt IS NULL');
+            ->andWhere('u.deletedAt IS NULL')
+            ->andWhere('u.baneado = false');
 
         if ($presupuesto !== null) {
             $qb->andWhere('v.presupuesto <= :presupuesto')
@@ -86,6 +88,7 @@ class ViajeRepository extends ServiceEntityRepository
             ->join('v.id_usuario', 'u')
             ->where('v.destino IS NOT NULL')
             ->andWhere('u.deletedAt IS NULL')
+            ->andWhere('u.baneado = false')
             ->orderBy('v.destino', 'ASC')
             ->getQuery()
             ->getScalarResult();
@@ -105,6 +108,7 @@ class ViajeRepository extends ServiceEntityRepository
             ->join('v.id_usuario', 'u')
             ->where('v.destino IS NOT NULL')
             ->andWhere('u.deletedAt IS NULL')
+            ->andWhere('u.baneado = false')
             ->andWhere('LOWER(v.destino) LIKE LOWER(:q)')
             ->setParameter('q', '%' . $q . '%')
             ->orderBy('v.destino', 'ASC')

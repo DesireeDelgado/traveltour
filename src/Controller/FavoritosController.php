@@ -24,12 +24,13 @@ final class FavoritosController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
         // 3. Filtramos para que solo salgan los registros del usuario actual
-        // y que el dueño del viaje no esté en soft-delete
+        // y que el dueño del viaje no esté en soft-delete ni baneado
         $favoritos = $favoritosRepository->createQueryBuilder('f')
             ->join('f.id_viaje', 'v')
             ->join('v.id_usuario', 'u')
             ->where('f.id_usuario = :user')
             ->andWhere('u.deletedAt IS NULL')
+            ->andWhere('u.baneado = false')
             ->setParameter('user', $user)
             ->getQuery()
             ->getResult();
