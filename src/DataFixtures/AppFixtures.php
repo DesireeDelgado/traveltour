@@ -24,6 +24,7 @@ class AppFixtures extends Fixture
             'lolamento' => [
                 'email' => 'lolamento@traveltour.com',
                 'bio' => 'Apasionada por descubrir ciudades con historia, mercados locales y rutas tranquilas para perderme sin prisa.',
+                'foto' => '/img/profiles/fotoPerfilLolamento.jpg',
                 'viajes' => [
                     [
                         'titulo' => 'Escapada lenta a Lisboa',
@@ -86,6 +87,7 @@ class AppFixtures extends Fixture
             'ines_table' => [
                 'email' => 'inestable95@traveltour.com',
                 'bio' => 'Busco destinos con encanto, alojamientos acogedores y experiencias auténticas que contar.',
+                'foto' => '/img/profiles/InesTableFotoPerfil.JPG',
                 'viajes' => [
                     [
                         'titulo' => 'Encanto rural en la Toscana',
@@ -123,6 +125,10 @@ class AppFixtures extends Fixture
             $user->setRoles($uData['roles'] ?? ['ROLE_USER']);
             $user->setFechaRegistro(new \DateTimeImmutable());
             $user->setBiografia($uData['bio'] ?? null);
+
+            if (isset($uData['foto'])) {
+                $user->setUrlFotoPerfil($uData['foto']);
+            }
 
             $hashedPassword = $this->passwordHasher->hashPassword($user, '123456');
             $user->setPassword($hashedPassword);
