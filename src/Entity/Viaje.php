@@ -309,4 +309,19 @@ class Viaje
 
         return $this;
     }
+
+    /**
+     * Devuelve las URLs públicas de todas las imágenes del viaje como array de strings.
+     * Usa la ruta /imagen/viaje/{filename} que sirve los ficheros desde storage/viajes/.
+     * EasyAdmin ImageField requiere string|string[], no colecciones de entidades.
+     *
+     * @return string[]
+     */
+    public function getImagenesUrls(): array
+    {
+        return $this->imagenes
+            ->filter(fn($img) => $img->getUrlPath() !== null)
+            ->map(fn($img) => '/imagen/viaje/' . $img->getUrlPath())
+            ->toArray();
+    }
 }
