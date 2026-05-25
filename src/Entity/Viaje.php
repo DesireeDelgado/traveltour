@@ -324,4 +324,21 @@ class Viaje
             ->map(fn($img) => '/imagen/viaje/' . $img->getUrlPath())
             ->toArray();
     }
+
+    /**
+     * Helper string for EasyAdmin
+     */
+    public function getImagenesHtml(): string
+    {
+        $urls = $this->getImagenesUrls();
+        if (empty($urls)) {
+            return 'Sin imágenes';
+        }
+        $html = '<div style="display: flex; flex-wrap: wrap; gap: 10px;">';
+        foreach ($urls as $url) {
+            $html .= sprintf('<img src="%s" style="max-height: 150px; border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" alt="Imagen" />', $url);
+        }
+        $html .= '</div>';
+        return $html;
+    }
 }

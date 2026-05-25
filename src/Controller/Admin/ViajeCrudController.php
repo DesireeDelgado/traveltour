@@ -80,10 +80,11 @@ class ViajeCrudController extends AbstractCrudController
                 TextareaField::new('gastronomia')->setLabel('Gastronomía'),
                 // Imágenes del viaje: usa el getter virtual getImagenesUrls() que devuelve string[].
                 // Las URLs ya son absolutas (/imagen/viaje/archivo.jpg), servidas por ImagenController.
-                // NO se usa setBasePath() porque EasyAdmin lo concatenaría y generaría rutas incorrectas.
-                ImageField::new('imagenesUrls')
+                // Usamos un getter virtual en la entidad que devuelve la etiqueta img HTML en forma de string nativo.
+                TextField::new('imagenesHtml')
                     ->setLabel('Imágenes')
-                    ->onlyOnDetail(),
+                    ->onlyOnDetail()
+                    ->renderAsHtml(),
             ];
         }
 

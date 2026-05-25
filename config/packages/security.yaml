@@ -40,6 +40,9 @@ security:
         - { path: ^/register, roles: PUBLIC_ACCESS }
         - { path: ^/logout, roles: PUBLIC_ACCESS }
 
+        # Permitimos a todos los usuarios autenticados (User o Admin) ver imágenes
+        - { path: ^/imagen, roles: IS_AUTHENTICATED_REMEMBERED }
+
         #RUTAS ADMIN
         - { path: ^/admin, roles: ROLE_ADMIN }
         ##RUTAS PRIVADAS
