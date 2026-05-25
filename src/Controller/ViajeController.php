@@ -79,7 +79,8 @@ final class ViajeController extends AbstractController
             ]);
 
             if ($existe) {
-                return $this->redirectToRoute('app_viaje_index');
+                $this->addFlash('error', 'Ya existe un viaje con ese título y destino. ¡Sé más creativo!');
+                return $this->redirectToRoute('app_viaje_new');
             }
             // --- FIN BLOQUE ---
 

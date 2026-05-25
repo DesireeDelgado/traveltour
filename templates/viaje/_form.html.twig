@@ -20,12 +20,16 @@
     </div>
     
     {{ form_start(form, {'attr': {'class': 'grid grid-cols-1 md:grid-cols-2 gap-8', 'enctype': 'multipart/form-data', 'onsubmit': 'setTimeout(() => { const btn = this.querySelector("button[type=submit]"); if(btn) { btn.disabled = true; btn.innerText = "Guardando..."; } }, 0);'}}) }}
+        <div class="col-span-1 md:col-span-2 text-rose-500 font-bold">
+            {{ form_errors(form) }}
+        </div>
         
         <!-- Left Column: Primary Details -->
         <div class="space-y-8">
             <div class="flex flex-col gap-2">
                 <label class="text-xs font-bold uppercase tracking-widest text-slate-500 px-4">Título del viaje</label>
                 {{ form_widget(form.titulo, {'attr': {'class': 'w-full bg-slate-200 border-none rounded-full px-6 py-4 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-600/20 transition-all', 'placeholder': 'Ej: Atardeceres en Santorini'}}) }}
+                <div class="text-red-500 text-sm px-4">{{ form_errors(form.titulo) }}</div>
             </div>
             
             <div class="flex flex-col gap-2">
@@ -40,6 +44,7 @@
                     {% endif %}
                     {{ form_widget(form.destino, {'attr': destino_attr}) }}
                 </div>
+                <div class="text-red-500 text-sm px-4">{{ form_errors(form.destino) }}</div>
             </div>
             
             <div class="grid grid-cols-2 gap-4">
@@ -48,6 +53,7 @@
                     <div class="relative">
                         {{ form_widget(form.duracion, {'attr': {'class': 'w-full bg-slate-200 border-none rounded-full px-6 py-4 text-slate-800 focus:ring-2 focus:ring-blue-600/20 transition-all', 'placeholder': 'Ej: 5'}}) }}
                     </div>
+                    <div class="text-red-500 text-sm px-4">{{ form_errors(form.duracion) }}</div>
                 </div>
                 <div class="flex flex-col gap-2">
                     <label class="text-xs font-bold uppercase tracking-widest text-slate-500 px-4">Presupuesto</label>
@@ -55,16 +61,19 @@
                         <span class="absolute left-6 top-1/2 -translate-y-1/2 text-slate-500 font-medium">€</span>
                         {{ form_widget(form.presupuesto, {'attr': {'class': 'w-full bg-slate-200 border-none rounded-full pl-10 pr-6 py-4 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-600/20 transition-all', 'placeholder': '0.00'}}) }}
                     </div>
+                    <div class="text-red-500 text-sm px-4">{{ form_errors(form.presupuesto) }}</div>
                 </div>
             </div>
 
             <div class="flex flex-col gap-2">
                 <label class="text-xs font-bold uppercase tracking-widest text-slate-500 px-4">¿Dónde te alojaste?</label>
                 {{ form_widget(form.alojamiento, {'attr': {'class': 'w-full bg-slate-200 border-none rounded-xl px-6 py-4 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-600/20 transition-all resize-none', 'placeholder': 'Describe tu estancia...', 'rows': '3'}}) }}
+                <div class="text-red-500 text-sm px-2">{{ form_errors(form.alojamiento) }}</div>
             </div>
             <div class="flex flex-col gap-2">
                 <label class="text-xs font-bold uppercase tracking-widest text-slate-500 px-4">¿Dónde comiste?</label>
                 {{ form_widget(form.gastronomia, {'attr': {'class': 'w-full bg-slate-200 border-none rounded-xl px-6 py-4 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-600/20 transition-all resize-none', 'placeholder': 'Restaurantes, comida callejera, cafés...', 'rows': '3'}}) }}
+                <div class="text-red-500 text-sm px-2">{{ form_errors(form.gastronomia) }}</div>
             </div>
         </div>
         
@@ -73,6 +82,7 @@
             <div class="flex flex-col gap-2 h-full">
                 <label class="text-xs font-bold uppercase tracking-widest text-slate-500 px-4">¿Qué viste? (Experiencias)</label>
                 {{ form_widget(form.contenido, {'attr': {'class': 'w-full h-full min-h-[200px] bg-slate-200 border-none rounded-xl px-6 py-4 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-600/20 transition-all resize-none', 'placeholder': 'Actividades, monumentos, joyas ocultas...'}}) }}
+                <div class="text-red-500 text-sm px-2">{{ form_errors(form.contenido) }}</div>
             </div>
         </div>
         
