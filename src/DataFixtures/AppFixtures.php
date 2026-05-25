@@ -5,6 +5,8 @@ namespace App\DataFixtures;
 use App\Entity\Imagen;
 use App\Entity\Usuario;
 use App\Entity\Viaje;
+use App\Entity\Favoritos;
+use App\Entity\Comentario;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -159,6 +161,9 @@ class AppFixtures extends Fixture
             ],
         ];
 
+        $usuariosGuardados = [];
+        $viajesGuardados = [];
+
         foreach ($usuariosData as $nick => $uData) {
             // 1. Creamos y persistimos el Usuario
             $user = new Usuario();
@@ -176,6 +181,8 @@ class AppFixtures extends Fixture
             $user->setPassword($hashedPassword);
 
             $manager->persist($user);
+            $usuariosGuardados[$nick] = $user;
+            $viajesGuardados[$nick] = [];
 
             // 2. Creamos los Viajes de este usuario (si tiene)
             foreach ($uData['viajes'] ?? [] as $vData) {
@@ -193,6 +200,7 @@ class AppFixtures extends Fixture
                 $viaje->setIdUsuario($user);
 
                 $manager->persist($viaje);
+                $viajesGuardados[$nick][] = $viaje;
 
                 // Si tiene imagenes, se las asignamos
                 if (isset($vData['imagenes'])) {
@@ -221,7 +229,67 @@ class AppFixtures extends Fixture
             }
         }
 
-        // 3. Guardamos todo en la base de datos de una sola vez
+        // ==========================================
+        // 3. Añadimos Favoritos y Comentarios fijos
+        // ==========================================
+        
+        // El viaje de Madrid de Lolamento (índice 0)
+        $viajeMadrid = $viajesGuardados['lolamento'][0];
+        
+        // 3 Favoritos para Madrid
+        foreach (['lolamento', 'fermin_trujillo', 'ines_table'] as $n) {
+            $fav = new Favoritos();
+            $fav->setIdUsuario($usuariosGuardados[$n]);
+            $fav->setIdViaje($viajeMadrid);
+            $manager->persist($fav);
+        }
+
+        // Comentario para Madrid
+        $comentario1 = new Comentario();
+        $comentario1->setIdUsuario($usuariosGuardados['fermin_trujillo']);
+        $comentario1->setIdViaje($viajeMadrid);
+        $comentario1->setComentario('¡Qué chulada de viaje, Lola! Me apunto lo del speakeasy para la próxima vez que suba.');
+        $comentario1->setFechaCreacion(new \DateTimeImmutable('-2 days'));
+        $manager->persist($comentario1);
+
+        // El viaje de Berlín de Ines Table (índice 1)
+        $viajeBerlin = $viajesGuardados['ines_table'][1];
+
+        // 2 Favoritos para Berlín
+        foreach (['lolamento', 'fermin_trujillo'] as $n) {
+            $fav = new Favoritos();
+            $fav->setIdUsuario($usuariosGuardados[$n]);
+            $fav->setIdViaje($viajeBerlin);
+            $manager->persist($fav);
+        }
+
+        // Comentario para Berlín
+        $comentario2 = new Comentario();
+        $comentario2->setIdUsuario($usuariosGuardados['lolamento']);
+        $comentario2->setIdViaje($viajeBerlin);
+        $comentario2->setComentario('Berlín tiene un rollo increíble. Yo fui hace un par de años y me encantó la movida urbana.');
+        $comentario2->setFechaCreacion(new \DateTimeImmutable('-1 days'));
+        $manager->persist($comentario2);
+
+        // El viaje de Barcelona de Fermín (índice 1)
+        $viajeBcnFermin = $viajesGuardados['fermin_trujillo'][1];
+
+        // 1 Favorito para Barcelona
+        $fav = new Favoritos();
+        $fav->setIdUsuario($usuariosGuardados['ines_table']);
+        $fav->setIdViaje($viajeBcnFermin);
+        $manager->persist($fav);
+        
+        // Comentario para Barcelona de Fermín
+        $comentario3 = new Comentario();
+        $comentario3->setIdUsuario($usuariosGuardados['ines_table']);
+        $comentario3->setIdViaje($viajeBcnFermin);
+        $comentario3->setComentario('Doy fe de que las bravas de la Boquería están espectaculares. Buenísima ruta Fermín!');
+        $comentario3->setFechaCreacion(new \DateTimeImmutable('-3 hours'));
+        $manager->persist($comentario3);
+
+
+        // 4. Guardamos todo en la base de datos de una sola vez
         $manager->flush();
     }
 }
