@@ -19,7 +19,7 @@
         <p class="text-on-surface-variant text-lg">Inmortaliza tu próxima aventura en tu diario digital.</p>
     </div>
     
-    {{ form_start(form, {'attr': {'class': 'grid grid-cols-1 md:grid-cols-2 gap-8', 'enctype': 'multipart/form-data', 'onsubmit': 'setTimeout(() => { const btn = this.querySelector("button[type=submit]"); if(btn) { btn.disabled = true; btn.innerText = "Guardando..."; } }, 0);'}}) }}
+    {{ form_start(form, {'attr': {'class': 'grid grid-cols-1 md:grid-cols-2 gap-8', 'enctype': 'multipart/form-data'}}) }}
         <div class="col-span-1 md:col-span-2 text-rose-500 font-bold">
             {{ form_errors(form) }}
         </div>
@@ -135,36 +135,71 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitBtn = document.getElementById('submit-btn');
 
     if (form && fileInput) {
+        let isSubmitting = false;
+
         form.addEventListener('submit', async (e) => {
-            if (fileInput.files.length === 0) return;
-            
-            e.preventDefault(); // Detenemos el envío sí o sí
-            
-            submitBtn.disabled = true;
-            submitBtn.innerText = 'Procesando imágenes una a una...';
-
-            const dataTransfer = new DataTransfer();
-            const files = Array.from(fileInput.files);
-
-            for (const file of files) {
-                // Aquí forzamos la espera real
-                const compressed = await imageCompression(file, {
-                    maxSizeMB: 0.3, 
-                    maxWidthOrHeight: 800,
-                    useWebWorker: true,
-                    preserveExif: false
-                });
-
-                const newFile = new File([compressed], file.name, { type: 'image/jpeg' });
-                dataTransfer.items.add(newFile);
-                console.log(`Finalizada: ${file.name}`);
+            if (isSubmitting) {
+                e.preventDefault();
+                return;
             }
 
-            // Sustituimos los archivos del input por los comprimidos
-            fileInput.files = dataTransfer.files;
+            if (fileInput.files.length === 0) return;
             
-            // Enviamos el formulario manualmente
-            form.submit(); 
+            e.preventDefault(); // Detenemos el envío para procesar las imágenes
+            isSubmitting = true;
+            submitBtn.disabled = true;
+            
+            let originalText = 'Guardar';
+            const textSpan = submitBtn.querySelector('#submit-text');
+            if (textSpan) {
+                originalText = textSpan.innerText;
+                textSpan.innerText = 'Procesando imágenes...';
+            } else {
+                originalText = submitBtn.innerText;
+                submitBtn.innerText = 'Procesando imágenes...';
+            }
+
+            try {
+                const dataTransfer = new DataTransfer();
+                const files = Array.from(fileInput.files);
+
+                for (const file of files) {
+                    try {
+                        const compressed = await imageCompression(file, {
+                            maxSizeMB: 0.3, 
+                            maxWidthOrHeight: 800,
+                            useWebWorker: false, // Deshabilitar WebWorker porque puede colgarse en ciertos navegadores/incógnito
+                            preserveExif: false
+                        });
+
+                        const newFile = new File([compressed], file.name, { type: file.type || 'image/jpeg' });
+                        dataTransfer.items.add(newFile);
+                        console.log(`Finalizada compresión de: ${file.name}`);
+                    } catch (compressionError) {
+                        console.error('Error comprimiendo la imagen, se enviará la original:', compressionError);
+                        dataTransfer.items.add(file); // Si falla, añadimos la original para que no se pierda
+                    }
+                }
+
+                // Sustituimos los archivos del input por los comprimidos
+                fileInput.files = dataTransfer.files;
+                
+                if (textSpan) textSpan.innerText = 'Subiendo...';
+                
+                // Enviamos el formulario manualmente
+                form.submit(); 
+            } catch (err) {
+                console.error("Error global en el envío:", err);
+                alert("Ocurrió un problema al procesar las fotos. Por favor inténtalo de nuevo.");
+                
+                submitBtn.disabled = false;
+                if (textSpan) {
+                    textSpan.innerText = originalText;
+                } else {
+                    submitBtn.innerText = originalText;
+                }
+                isSubmitting = false;
+            }
         });
     }
 });
