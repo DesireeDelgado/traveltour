@@ -38,7 +38,7 @@
                         'class': 'space-y-6', 
                         'novalidate': 'novalidate', 
                         'data-turbo': 'false',
-                        'onsubmit': 'setTimeout(() => { this.querySelector("button[type=submit]").disabled = true; this.querySelector("button[type=submit]").innerText = "Creando cuenta, por favor espera..."; }, 0);'
+                        'id': 'registration-form'
                     }}) }}
                         
                         <!-- Nickname Input -->
@@ -157,5 +157,30 @@
 
 <!-- Importamos nuestro script alojado en public/js/ -->
 <script src="{{ asset('js/register-carousel.js') }}"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('registration-form');
+    if (form) {
+        let isSubmitting = false;
+        form.addEventListener('submit', function(e) {
+            if (isSubmitting) {
+                e.preventDefault();
+                return false;
+            }
+            isSubmitting = true;
+            
+            const btn = form.querySelector('button[type="submit"]');
+            if (btn) {
+                // Pequeño timeout para asegurar que el submit nativo se ejecute antes de deshabilitar visualmente
+                setTimeout(() => {
+                    btn.disabled = true;
+                    btn.innerText = 'Creando cuenta, por favor espera...';
+                }, 10);
+            }
+        });
+    }
+});
+</script>
 
 {% endblock %}
