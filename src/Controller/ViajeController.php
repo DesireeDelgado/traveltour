@@ -229,7 +229,9 @@ public function comentar(Request $request, Viaje $viaje, EntityManagerInterface 
             throw $this->createAccessDeniedException('No tienes permiso para editar este viaje.');
         }
 
-        $form = $this->createForm(ViajeType::class, $viaje);
+        $form = $this->createForm(ViajeType::class, $viaje, [
+            'is_edit' => true,
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

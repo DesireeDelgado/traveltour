@@ -20,8 +20,10 @@ class ViajeType extends AbstractType
             ->add('presupuesto')
             ->add('contenido')
             ->add('alojamiento')
-            ->add('gastronomia')
-            ->add('imagenes', \Symfony\Component\Form\Extension\Core\Type\FileType::class, [
+            ->add('gastronomia');
+            
+        if (!$options['is_edit']) {
+            $builder->add('imagenes', \Symfony\Component\Form\Extension\Core\Type\FileType::class, [
                 'mapped' => false,
                 'multiple' => true,
                 'required' => true,
@@ -43,8 +45,8 @@ class ViajeType extends AbstractType
                         ]
                     ])
                 ],
-            ])
-        ;
+            ]);
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -52,6 +54,7 @@ class ViajeType extends AbstractType
         $resolver->setDefaults([
             'data_class' => Viaje::class,
             'csrf_protection' => false, // <-- AÑADE ESTO
+            'is_edit' => false,
         ]);
     }
 }

@@ -86,6 +86,7 @@
             </div>
         </div>
         
+        {% if not is_edit|default(false) %}
         <!-- Full Width Visual Element (Asymmetric Bento) -->
         <div class="md:col-span-2 mt-4">
             <div class="bg-slate-50 rounded-xl p-8 flex flex-col md:flex-row items-center gap-8 border border-slate-200">
@@ -109,6 +110,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
 
         {{ form_rest(form) }}
         
