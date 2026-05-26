@@ -27,6 +27,7 @@ class Notificacion
     private ?Usuario $usuario = null;
 
     #[ORM\ManyToOne(inversedBy: 'notificaciones')]
+    #[ORM\JoinColumn(onDelete: 'CASCADE')]
     private ?Viaje $viaje = null;
 
     public function getId(): ?int

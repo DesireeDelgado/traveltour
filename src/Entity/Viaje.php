@@ -41,19 +41,19 @@ class Viaje
     /**
      * @var Collection<int, Comentario>
      */
-    #[ORM\OneToMany(targetEntity: Comentario::class, mappedBy: 'id_viaje', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Comentario::class, mappedBy: 'id_viaje', cascade: ['remove'], orphanRemoval: true)]
     private Collection $comentarios;
 
     /**
      * @var Collection<int, Imagen>
      */
-    #[ORM\OneToMany(targetEntity: Imagen::class, mappedBy: 'id_viaje', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Imagen::class, mappedBy: 'id_viaje', cascade: ['remove'], orphanRemoval: true)]
     private Collection $imagenes;
 
     /**
      * @var Collection<int, Favoritos>
      */
-    #[ORM\OneToMany(targetEntity: Favoritos::class, mappedBy: 'id_viaje', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Favoritos::class, mappedBy: 'id_viaje', cascade: ['remove'], orphanRemoval: true)]
     private Collection $favoritos;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -65,7 +65,7 @@ class Viaje
     /**
      * @var Collection<int, Notificacion>
      */
-    #[ORM\OneToMany(targetEntity: Notificacion::class, mappedBy: 'viaje')]
+    #[ORM\OneToMany(targetEntity: Notificacion::class, mappedBy: 'viaje', cascade: ['remove'])]
     private Collection $notificaciones;
 
     public function __construct()
