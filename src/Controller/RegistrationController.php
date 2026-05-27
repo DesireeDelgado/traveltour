@@ -37,11 +37,8 @@ class RegistrationController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // Guardamos el retorno del login
-            $security->login($user, AppCustomAuthenticator::class, 'main');
-
-            // Obligamos físicamente a saltar al dashboard en vez de evaluar qué devuelve Authenticator
-            return $this->redirectToRoute('app_dashboard');
+            // Log the user in and return the response directly
+            return $security->login($user, AppCustomAuthenticator::class, 'main') ?: $this->redirectToRoute('app_dashboard');
         }
 
         return $this->render('registration/register.html.twig', [

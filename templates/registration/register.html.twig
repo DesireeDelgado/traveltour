@@ -164,20 +164,22 @@ document.addEventListener('DOMContentLoaded', () => {
     if (form) {
         let isSubmitting = false;
         form.addEventListener('submit', function(e) {
+            e.preventDefault(); // Detenemos el submit nativo siempre para tener control total
+            
             if (isSubmitting) {
-                e.preventDefault();
                 return false;
             }
             isSubmitting = true;
             
             const btn = form.querySelector('button[type="submit"]');
             if (btn) {
-                // Pequeño timeout para asegurar que el submit nativo se ejecute antes de deshabilitar visualmente
-                setTimeout(() => {
-                    btn.disabled = true;
-                    btn.innerText = 'Creando cuenta, por favor espera...';
-                }, 10);
+                // Deshabilitar inmediatamente para evitar el doble envío
+                btn.disabled = true;
+                btn.innerText = 'Creando cuenta, por favor espera...';
             }
+            
+            // Asegurar que el form se envíe una única vez por JS
+            form.submit();
         });
     }
 });
